@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">Arcade Phito</string>
+
+    <!-- NAVIGATION -->
+    <string name="games_screen">GAMES</string>
+    <string name="profile_screen">PROFILE</string>
+
+    <!-- LOGIN -->
+    <string name="logo_message">Welcome to arcade phito, please login or register </string>
+    <string name="username_label">Username</string>
+    <string name="username_placeholder">Please create a username</string>
+    <string name="email_label">Email</string>
+    <string name="email_placeholder">Please enter a valid email</string>
+    <string name="password_label">Password</string>
+    <string name="password_placeholder">Please enter a password</string>
+    <string name="signup_button">Register</string>
+    <string name="signin_button">Sign In</string>
+    <string name="click_to_signup">Create account</string>
+    <string name="click_to_signin">Sign in with account</string>
+    <string name="show_password">Show password</string>
+    <string name="hide_password">Hide password</string>
+
+    <!-- PROFILE -->
+    <string name="user_profile">Profile</string>
+    <string name="signout_button">Sign Out</string>
+
+    <!-- TicTacToe -->
+    <string name="tictactoe">Tic Tac Toe</string>
+    <string name="tictactoe_description">Tic Tac Toe is a game for two players, X and O, who take turns marking the spaces in a 3×3 grid. The player who succeeds in placing three of their marks in a horizontal, vertical, or diagonal row is the winner.</string>
+    <string name="tictactoe_x_wins">X wins!</string>
+    <string name="tictactoe_o_wins">O wins!</string>
+    <string name="tictactoe_draw">It\'s a draw!</string>
+    <string name="tictactoe_reset">Play again</string>
+    <string name="tictactoe_quit">Quit</string>
+
+</resources>

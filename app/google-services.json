@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1065378005",
+    "project_id": "arcade-phito",
+    "storage_bucket": "arcade-phito.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1065378005:android:c040929a0d1bd77e64825c",
+        "android_client_info": {
+          "package_name": "com.ralphdugue.arcadephito"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1065378005-piga3f4nvncgoutau218607p7p4rstp7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwjZ3xybrq-T_phc38uowkX_6dqkrVVGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1065378005-piga3f4nvncgoutau218607p7p4rstp7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
