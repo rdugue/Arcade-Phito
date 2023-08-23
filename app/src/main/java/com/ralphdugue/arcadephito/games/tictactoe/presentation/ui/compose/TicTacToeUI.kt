@@ -13,15 +13,19 @@ import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,8 +36,26 @@ import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeMark
 import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.TicTacToeViewModel
 import com.ralphdugue.arcadephito.theme.ArcadePhitoTheme
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Preview(
     showBackground = true,
+    heightDp = 420,
+    widthDp = 933
+)
+@Preview(
+    showBackground = true,
+    heightDp = 933,
+    widthDp = 420
+)
+@Preview(
+    showBackground = true,
+    heightDp = 800,
+    widthDp = 1280
+)
+@Preview(
+    showBackground = true,
+    heightDp = 1280,
+    widthDp = 800
 )
 @Composable
 fun TicTacToePreview() {
@@ -59,48 +81,59 @@ fun TicTacToeBoard(
             TopAppBar(
                 title = { Text(text = stringResource(id = R.string.tictactoe)) },
                 navigationIcon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.close),
-                        contentDescription = stringResource(id = R.string.game_exit),
-                        modifier = Modifier
-                            .padding(10.dp)
-                            .clickable { onDismiss(false) }
-                    )
+                    IconButton(
+                        onClick = { onDismiss(false) }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.close),
+                            contentDescription = stringResource(id = R.string.game_exit),
+                        )
+                    }
                 }
             )
-            PlayerRow(
-                modifier = Modifier.align(Alignment.Start),
-                username = state.opponent?.userProfile?.username ?: "AI",
-                imageUrl = state.opponent?.userProfile?.imageUrl
-            )
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                contentPadding = PaddingValues(10.dp),
+            Column(
                 modifier = Modifier
-                    .width(500.dp)
-                    .height(500.dp),
-                verticalArrangement = Arrangement.Center
+                    .fillMaxSize()
+                    .padding(10.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                state.board.squares.forEachIndexed { x, row ->
-                    itemsIndexed(row) { y, square ->
-                        Card(
-                            modifier = Modifier.padding(4.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                            shape = RoundedCornerShape(5.dp)
-                        ) {
-                            TicTacToeSquare(
-                                modifier = Modifier,
-                                mark = square
-                            ) { onClick(Pair(x, y)) }
+                PlayerRow(
+                    modifier = Modifier.align(Alignment.Start),
+                    username = state.opponent?.userProfile?.username ?: "AI",
+                    imageUrl = state.opponent?.userProfile?.imageUrl,
+                    mark = state.opponent?.mark ?: TicTacToeMark.O
+                )
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(3),
+                    contentPadding = PaddingValues(10.dp),
+                    modifier = Modifier
+                        .width(500.dp)
+                        .height(500.dp),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    state.board.squares.forEachIndexed { x, row ->
+                        itemsIndexed(row) { y, square ->
+                            Card(
+                                modifier = Modifier.padding(4.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                                shape = RoundedCornerShape(5.dp)
+                            ) {
+                                TicTacToeSquare(
+                                    modifier = Modifier,
+                                    mark = square
+                                ) { onClick(Pair(x, y)) }
+                            }
                         }
                     }
                 }
+                PlayerRow(
+                    modifier = Modifier.align(Alignment.End),
+                    username = state.player.userProfile?.username,
+                    imageUrl = state.player.userProfile?.imageUrl,
+                    mark = state.player.mark ?: TicTacToeMark.X
+                )
             }
-            PlayerRow(
-                modifier = Modifier.align(Alignment.End),
-                username = state.player.userProfile?.username,
-                imageUrl = state.player.userProfile?.imageUrl
-            )
         }
     }
 }
@@ -113,8 +146,8 @@ private fun TicTacToeSquare(
 ) {
     val imageId = when (mark) {
         TicTacToeMark.BLANK -> R.drawable.tic_tac_toe_blank
-        TicTacToeMark.X -> R.drawable.tic_tac_toe_x
-        TicTacToeMark.O -> R.drawable.tic_tac_toe_circle
+        TicTacToeMark.X -> R.drawable.x
+        TicTacToeMark.O -> R.drawable.o
     }
     Box(
         modifier = modifier
@@ -134,7 +167,12 @@ private fun TicTacToeSquare(
 }
 
 @Composable
-private fun PlayerRow(modifier: Modifier, username: String?, imageUrl: String?) {
+private fun PlayerRow(
+    modifier: Modifier,
+    username: String?,
+    imageUrl: String?,
+    mark: TicTacToeMark
+) {
     Card(
         modifier = modifier
             .padding(15.dp)
@@ -158,9 +196,23 @@ private fun PlayerRow(modifier: Modifier, username: String?, imageUrl: String?) 
                 model = imageUrl,
                 placeholder = painterResource(id = R.drawable.profile),
                 fallback = painterResource(id = R.drawable.profile),
+                error = painterResource(id = R.drawable.profile),
                 contentDescription = name
             )
+            Spacer(modifier = Modifier.width(10.dp))
             Text(text = name, style = MaterialTheme.typography.labelLarge)
+            Spacer(modifier = Modifier.width(10.dp))
+            Image(
+                modifier = Modifier
+                    .height(20.dp)
+                    .width(20.dp),
+                painter = painterResource(id = when (mark) {
+                    TicTacToeMark.X -> R.drawable.x
+                    TicTacToeMark.O -> R.drawable.o
+                    else -> R.drawable.tic_tac_toe_blank
+                }),
+                contentDescription = null
+            )
         }
     }
 }
