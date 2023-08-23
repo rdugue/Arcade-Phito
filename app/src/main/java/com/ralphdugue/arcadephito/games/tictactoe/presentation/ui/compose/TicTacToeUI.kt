@@ -1,4 +1,4 @@
-package com.ralphdugue.arcadephito.games.tictactoe.presentation.ui
+package com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.compose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,20 +17,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.ralphdugue.arcadephito.R
 import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeMark
+import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.TicTacToeViewModel
 import com.ralphdugue.arcadephito.theme.ArcadePhitoTheme
 
 @Preview(
@@ -44,11 +42,12 @@ fun TicTacToePreview() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TicTacToeBoard(
     state: TicTacToeViewModel.GameState,
-    onDismiss: (playAgain: Boolean) -> Unit = {},
-    onClick: (square: Pair<Int, Int>) -> Unit
+    onClick: (square: Pair<Int, Int>) -> Unit = {},
+    onDismiss: (playAgain: Boolean) -> Unit = {}
 ) {
     if (state.isGameOver) {
         WinnerDialog(
@@ -57,12 +56,17 @@ fun TicTacToeBoard(
         ) { onDismiss(it) }
     } else {
         Column {
-            Text(
-                modifier = Modifier
-                    .padding(10.dp)
-                    .align(Alignment.CenterHorizontally),
-                text = stringResource(id = R.string.tictactoe),
-                style = MaterialTheme.typography.headlineMedium
+            TopAppBar(
+                title = { Text(text = stringResource(id = R.string.tictactoe)) },
+                navigationIcon = {
+                    Image(
+                        painter = painterResource(id = R.drawable.close),
+                        contentDescription = stringResource(id = R.string.game_exit),
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .clickable { onDismiss(false) }
+                    )
+                }
             )
             PlayerRow(
                 modifier = Modifier.align(Alignment.Start),

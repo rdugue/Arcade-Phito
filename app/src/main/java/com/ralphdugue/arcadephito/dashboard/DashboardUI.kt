@@ -18,7 +18,9 @@ import com.ralphdugue.arcadephito.games.domain.Game
 import com.ralphdugue.arcadephito.games.presentation.ui.GamesViewModel
 import com.ralphdugue.arcadephito.games.presentation.ui.LoadGames
 import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.MakePlayerMove
+import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.PlayAgain
 import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.TicTacToeViewModel
+import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.compose.TicTacToeDelegate
 import com.ralphdugue.arcadephito.profile.domain.UserProfile
 import com.ralphdugue.arcadephito.profile.presentation.ui.LoadProfile
 import com.ralphdugue.arcadephito.profile.presentation.ui.ProfileViewModel
@@ -64,8 +66,7 @@ fun DashboardUI(
     windowSizeClass: WindowSizeClass,
     games: List<Game> = GAMES_LIST.map { it.toGame() },
     userProfile: UserProfile = UserProfile(),
-    state: TicTacToeViewModel.GameState = TicTacToeViewModel.GameState(),
-    onClickTicTacToe: (square: Pair<Int, Int>) -> Unit = {},
+    ticTacToeDelegate: TicTacToeDelegate = TicTacToeDelegate(),
     onSignOut: () -> Unit
 ) {
     when {
@@ -73,8 +74,7 @@ fun DashboardUI(
             DashboardPortrait(
                 games = games,
                 userProfile = userProfile,
-                state = state,
-                onClickTicTacToe = { onClickTicTacToe(it) },
+                ticTacToeDelegate = ticTacToeDelegate,
                 onSignOut = onSignOut
             )
         }
@@ -82,8 +82,7 @@ fun DashboardUI(
             DashboardLandscape(
                 games = games,
                 userProfile = userProfile,
-                state = state,
-                onClickTicTacToe = { onClickTicTacToe(it) },
+                ticTacToeDelegate = ticTacToeDelegate,
                 onSignOut = onSignOut
             )
         }
@@ -91,7 +90,7 @@ fun DashboardUI(
 }
 
 @Composable
-fun DashboardScreen(windowSizeClass: WindowSizeClass, onSignOut: () -> Unit) {
+fun DashboardScreen(windowSizeClass: WindowSizeClass, onEndGame: () -> Unit, onSignOut: () -> Unit) {
     val profileViewModel: ProfileViewModel = hiltViewModel()
     val gamesViewModel: GamesViewModel = hiltViewModel()
     val ticTacToeViewModel: TicTacToeViewModel = hiltViewModel()
@@ -99,6 +98,14 @@ fun DashboardScreen(windowSizeClass: WindowSizeClass, onSignOut: () -> Unit) {
     val userProfile by profileViewModel.state.collectAsStateWithLifecycle()
     val gamesState by gamesViewModel.state.collectAsStateWithLifecycle()
     val ticTacToeState by ticTacToeViewModel.state.collectAsStateWithLifecycle()
+
+    val ticTacToeDelegate = TicTacToeDelegate(
+        state = ticTacToeState,
+        onClickSquare = { ticTacToeViewModel.onEvent(MakePlayerMove(it)) },
+        onDismiss = { playAgain ->
+            if (playAgain) ticTacToeViewModel.onEvent(PlayAgain) else onEndGame()
+        }
+    )
 
     SideEffect {
         if (!userProfile.isSignedIn) onSignOut()
@@ -108,8 +115,7 @@ fun DashboardScreen(windowSizeClass: WindowSizeClass, onSignOut: () -> Unit) {
         windowSizeClass = windowSizeClass,
         userProfile = userProfile.userProfile,
         games = gamesState.games,
-        state = ticTacToeState,
-        onClickTicTacToe = { ticTacToeViewModel.onEvent(MakePlayerMove(it)) },
+        ticTacToeDelegate = ticTacToeDelegate,
         onSignOut = onSignOut
     )
 
@@ -127,4 +133,4 @@ sealed class NavScreen(
 }
 
 sealed interface GameScreen : DashboardScreen
-object TicTacToeNavScreen :GameScreen
+object TicTacToeScreen :GameScreen

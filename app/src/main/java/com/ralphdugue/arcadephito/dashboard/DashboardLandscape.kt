@@ -15,8 +15,9 @@ import androidx.compose.ui.res.stringResource
 import com.ralphdugue.arcadephito.games.domain.Game
 import com.ralphdugue.arcadephito.games.domain.GameType
 import com.ralphdugue.arcadephito.games.presentation.ui.GamesList
-import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.TicTacToeBoard
+import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.compose.TicTacToeBoard
 import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.TicTacToeViewModel
+import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.compose.TicTacToeDelegate
 import com.ralphdugue.arcadephito.profile.domain.UserProfile
 import com.ralphdugue.arcadephito.profile.presentation.ui.ProfilePage
 
@@ -24,8 +25,7 @@ import com.ralphdugue.arcadephito.profile.presentation.ui.ProfilePage
 fun DashboardLandscape(
     games: List<Game>,
     userProfile: UserProfile,
-    state: TicTacToeViewModel.GameState,
-    onClickTicTacToe: (square: Pair<Int, Int>) -> Unit,
+    ticTacToeDelegate: TicTacToeDelegate,
     onSignOut: () -> Unit
 ) {
     var selectedScreen by remember { mutableStateOf<DashboardScreen>(NavScreen.GAMES) }
@@ -35,11 +35,17 @@ fun DashboardLandscape(
         when (selectedScreen) {
             NavScreen.GAMES -> GamesList(games) { gameId ->
                 selectedScreen = when (gameId) {
-                    GameType.TIC_TAC_TOE -> TicTacToeNavScreen
+                    GameType.TIC_TAC_TOE -> TicTacToeScreen
                 }
             }
             NavScreen.PROFILE -> ProfilePage(userProfile) { onSignOut() }
-            TicTacToeNavScreen -> TicTacToeBoard(state) { onClickTicTacToe(it) }
+            TicTacToeScreen -> {
+                TicTacToeBoard(
+                    state = ticTacToeDelegate.state,
+                    onClick = ticTacToeDelegate.onClickSquare,
+                    onDismiss = ticTacToeDelegate.onDismiss
+                )
+            }
         }
     }
 }

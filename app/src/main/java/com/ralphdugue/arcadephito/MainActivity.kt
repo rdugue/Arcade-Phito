@@ -49,9 +49,14 @@ class MainActivity : ComponentActivity() {
                                 viewModel = authViewModel
                             ) { selectedScreen = DASHBOARD }
                         }
-                        DASHBOARD ->  DashboardScreen(windowSizeClass = windowSizeClass) {
-                            authViewModel.onEvent(SignOut)
-                            selectedScreen = AUTH
+                        DASHBOARD -> {
+                            DashboardScreen(
+                                windowSizeClass = windowSizeClass,
+                                onEndGame = { selectedScreen = DASHBOARD },
+                            ) {
+                                authViewModel.onEvent(SignOut)
+                                selectedScreen = AUTH
+                            }
                         }
                     }
                 }

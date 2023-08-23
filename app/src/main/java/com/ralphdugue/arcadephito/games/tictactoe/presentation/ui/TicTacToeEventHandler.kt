@@ -54,6 +54,7 @@ class TicTacToeEventHandler @Inject constructor(
         }
         is ChooseMark -> TODO()
         is ChooseTurn -> TODO()
+        PlayAgain -> flowOf(TicTacToeViewModel.GameState())
     }
 
     private fun isMaxPlayer(state: TicTacToeViewModel.GameState) = with(state) { firstTurn == currentTurn }
