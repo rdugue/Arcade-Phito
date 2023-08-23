@@ -26,7 +26,7 @@ class TicTacToeRepositoryImpl @Inject constructor() : TicTacToeRepository {
 
     override fun isFull(board: Array<Array<TicTacToeMark>>): Boolean {
         board.forEach { row ->
-             if (row.all { it != TicTacToeMark.BLANK }) return false
+             if (row.any { it == TicTacToeMark.BLANK }) return false
         }
         return true
     }
