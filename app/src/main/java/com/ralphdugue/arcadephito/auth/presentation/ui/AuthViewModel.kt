@@ -1,5 +1,6 @@
 package com.ralphdugue.arcadephito.auth.presentation.ui
 
+import android.util.Log
 import com.ralphdugue.arcadephito.auth.domain.AuthenticationFields
 import com.ralphdugue.arcadephito.di.modules.IoDispatcher
 import com.ralphdugue.phitoarch.mvi.BaseViewModel
@@ -25,7 +26,7 @@ class AuthViewModel @Inject constructor(
     ): BaseViewState
 
     override fun errorState(throwable: Throwable) {
-        TODO("Not yet implemented")
+        Log.e("AuthViewModel", throwable.message.toString())
     }
 
     override fun initialState() = AuthState()

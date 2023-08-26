@@ -1,10 +1,10 @@
 package com.ralphdugue.arcadephito.games.tictactoe.presentation.ui
 
 import com.ralphdugue.arcadephito.auth.domain.AuthRepository
-import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeGrid
 import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeMark
 import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeRepository
 import com.ralphdugue.phitoarch.mvi.BaseIntentHandler
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -20,28 +20,35 @@ class TicTacToeEventHandler @Inject constructor(
     ): Flow<TicTacToeViewModel.GameState> = when (event) {
         MakeAIMove -> {
             val square = ticTacToeRepository.getBestMove(
-                board = currentState.board,
+                board = currentState.squares.map { it.map { it.value }.toTypedArray() },
                 isMaxPlayer = isMaxPlayer(currentState),
                 mark = currentState.currentTurn
             )
-            val board = currentState.board.apply {
-                placeMark(mark = currentState.currentTurn, square = square)
+            val squares = currentState.squares.apply {
+                this[square.first][square.second].value = currentState.currentTurn
             }
-            flowOf(currentState.copy(
-                board = board,
-                winner = ticTacToeRepository.getWinner(board.squares),
-                isGameOver = isGameOver(board)
-            ))
+            flow {
+                delay(400)
+                emit(currentState.copy(
+                    squares = squares,
+                    winner = ticTacToeRepository.getWinner(squares.map { it.map { it.value }.toTypedArray() }),
+                    isGameOver = isGameOver(squares.map { it.map { it.value }.toTypedArray() }),
+                    currentTurn = currentState.player.mark
+                ))
+            }
         }
         is MakePlayerMove -> {
-            val board = currentState.board.apply {
-                placeMark(mark = currentState.currentTurn, square = event.square)
+            val squares = currentState.squares.apply {
+                this[event.square.first][event.square.second].value = currentState.currentTurn
             }
-            flowOf(currentState.copy(
-                board = board,
-                winner = ticTacToeRepository.getWinner(board.squares),
-                isGameOver = isGameOver(board)
-            ))
+            flow {
+                emit(currentState.copy(
+                    squares = squares,
+                    winner = ticTacToeRepository.getWinner(squares.map { it.map { it.value }.toTypedArray() }),
+                    isGameOver = isGameOver(squares.map { it.map { it.value }.toTypedArray() }),
+                    currentTurn = currentState.opponent.mark
+                ))
+            }
         }
         LoadPlayers -> {
             val user = authRepository.getCurrentUser()
@@ -54,11 +61,11 @@ class TicTacToeEventHandler @Inject constructor(
         }
         is ChooseMark -> TODO()
         is ChooseTurn -> TODO()
-        PlayAgain -> flowOf(TicTacToeViewModel.GameState())
+        ResetGame -> flowOf(TicTacToeViewModel.GameState())
     }
 
     private fun isMaxPlayer(state: TicTacToeViewModel.GameState) = with(state) { firstTurn == currentTurn }
 
-    private fun isGameOver(board: TicTacToeGrid) =
-        ticTacToeRepository.getWinner(board.squares) != TicTacToeMark.BLANK || ticTacToeRepository.isFull(board.squares)
+    private fun isGameOver(squares: List<Array<TicTacToeMark>>) =
+        ticTacToeRepository.getWinner(squares) != TicTacToeMark.BLANK || ticTacToeRepository.isFull(squares)
 }
