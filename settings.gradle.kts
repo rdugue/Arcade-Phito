@@ -10,10 +10,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url 'https://gitlab.com/api/v4/projects/42441938/packages/maven'
-        }
+        maven("https://gitlab.com/api/v4/projects/42441938/packages/maven")
     }
 }
 rootProject.name = "ArcadePhito"
-include ':app'
+include(":app")
