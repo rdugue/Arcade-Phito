@@ -1,0 +1,14 @@
+image: gradle:8.1.2-jdk17
+
+variables:
+
+
+before_script:
+  -
+
+stages:
+  - build
+  - test
+  - staging
+  - deploy
+

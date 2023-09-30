@@ -26,12 +26,25 @@ android {
     signingConfigs {
         val properties = Properties()
         properties.load(rootProject.file("local.properties").inputStream())
-        val password: String = properties.getProperty("debug.keystore.password") ?: ""
+        val debugPassword: String = properties.getProperty("debug.keystore.password") ?: ""
+        val releaseStoreFile: String = properties.getProperty("storeFile") ?: ""
+        val releaseKeyAlias: String = properties.getProperty("keyAlias") ?: ""
+        val releaseKeyPassword: String = properties.getProperty("keyPassword") ?: ""
+        val releaseStorePassword: String = properties.getProperty("storePassword") ?: ""
+
+
         create("staging") {
             storeFile = rootProject.file("staging.keystore")
-            storePassword = System.getenv("DEBUG_KEYSTORE_PW") ?: password
+            storePassword = System.getenv("DEBUG_KEYSTORE_PW") ?: debugPassword
             keyAlias = "androiddebugkey"
-            keyPassword = System.getenv("DEBUG_KEYSTORE_PW") ?: password
+            keyPassword = System.getenv("DEBUG_KEYSTORE_PW") ?: debugPassword
+        }
+
+        create("release") {
+            storeFile = rootProject.file(releaseStoreFile)
+            storePassword = System.getenv("RELEASE_KEYSTORE_PW") ?: releaseStorePassword
+            keyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: releaseKeyAlias
+            keyPassword = System.getenv("RELEASE_KEY_PW") ?: releaseKeyPassword
         }
     }
 
@@ -42,7 +55,7 @@ android {
 
         getByName("release") {
             isMinifyEnabled = true
-            signingConfig = signingConfigs.getByName("staging")
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro")
         }
@@ -89,16 +102,14 @@ dependencies {
     ksp(libs.bundles.hilt.ksp)
 
     // firebase
-    implementation(platform("com.google.firebase:firebase-bom:31.2.3"))
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services")
 
     // testing
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.2")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.bundles.androidx.test)
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
