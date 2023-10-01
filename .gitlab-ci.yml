@@ -2,9 +2,13 @@ image: gradle:8.1.2-jdk17
 
 variables:
 
-
 before_script:
-  -
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+  - chmod +x ./gradlew
+  - apt update
+  - apt install -y ruby-full ruby-bundler
+  - gem install bundler
+  - bundle install
 
 stages:
   - build

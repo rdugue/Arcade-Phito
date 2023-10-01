@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ArcadePhito"
         tools:replace="android:theme"
-        tools:targetApi="33">
+        tools:targetApi="34">
         <activity
             android:name=".MainActivity"
             android:exported="true"

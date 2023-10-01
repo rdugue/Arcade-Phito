@@ -28,8 +28,8 @@ android {
         properties.load(rootProject.file("local.properties").inputStream())
         val debugPassword: String = properties.getProperty("debug.keystore.password") ?: ""
         val releaseStoreFile: String = properties.getProperty("storeFile") ?: ""
-        val releaseKeyAlias: String = properties.getProperty("keyAlias") ?: ""
         val releaseKeyPassword: String = properties.getProperty("keyPassword") ?: ""
+        val releaseKeyAlias: String = properties.getProperty("keyAlias") ?: ""
         val releaseStorePassword: String = properties.getProperty("storePassword") ?: ""
 
 
