@@ -23,6 +23,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Runs all the tests
 
+### android debug
+
+```sh
+[bundle exec] fastlane android debug
+```
+
+Create a debug build
+
 ### android beta
 
 ```sh

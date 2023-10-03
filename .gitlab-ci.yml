@@ -1,6 +1,14 @@
-image: gradle:8.1.2-jdk17
+image: theimpulson/gitlab-ci-android
 
 variables:
+  SECURE_FILES_URL: https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/-/raw/main/installer
+
+cache:
+  key:
+    files:
+      - .Gemfile.lock
+  paths:
+    - vendor/bundle
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
@@ -8,7 +16,7 @@ before_script:
   - apt update
   - apt install -y ruby-full ruby-bundler
   - gem install bundler
-  - bundle install
+  - bundle check --path vendor/bundle || bundle install --path vendor/bundle --jobs $(nproc)
 
 stages:
   - build
@@ -16,3 +24,31 @@ stages:
   - staging
   - deploy
 
+test:
+  stage: test
+  script:
+    - bundle exec fastlane test
+
+build:
+  stage: build
+  script:
+    - bundle exec fastlane debug
+  artifacts:
+    paths:
+      - app/build/outputs/apk/debug/app-debug.apk
+
+staging:
+  stage: staging
+  only:
+    - develop
+  script:
+    - curl -s $SECURE_FILES_URL | bash
+    - bundle exec fastlane beta
+
+deploy:
+  stage: deploy
+  only:
+    - main
+  script:
+    - curl -s $SECURE_FILES_URL | bash
+    - bundle exec fastlane deploy
