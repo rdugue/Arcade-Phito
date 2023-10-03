@@ -14,7 +14,7 @@ before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
   - chmod +x ./gradlew
   - apt update
-  - apt install -y ruby-full ruby-bundler
+  - apt install -y ruby-full ruby-bundler build-essential
   - gem install bundler
   - bundle config set path 'vendor/bundle'
   - bundle check || bundle install --jobs $(nproc)
