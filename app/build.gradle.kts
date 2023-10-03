@@ -26,7 +26,7 @@ android {
     signingConfigs {
 
         var debugPassword =  ""
-        var releaseStoreFile =  ""
+        var releaseStoreFile =  "empty"
         var releaseKeyPassword =  ""
         var releaseKeyAlias = ""
         var releaseStorePassword = ""
