@@ -16,7 +16,8 @@ before_script:
   - apt update
   - apt install -y ruby-full ruby-bundler
   - gem install bundler
-  - bundle check --path vendor/bundle || bundle install --path vendor/bundle --jobs $(nproc)
+  - bundle config set path 'vendor/bundle'
+  - bundle check || bundle install --jobs $(nproc)
 
 stages:
   - build
