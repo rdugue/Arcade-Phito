@@ -212,6 +212,7 @@ PLATFORMS
 
 DEPENDENCIES
   fastlane
+  unf_ext (~> 0.0.8.2)
 
 BUNDLED WITH
    2.1.4
