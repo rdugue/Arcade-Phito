@@ -26,7 +26,7 @@ android {
     signingConfigs {
 
         var debugPassword =  ""
-        var keystore =  "staging.keystore"
+        var releaseStoreFile =  ""
         var releaseKeyPassword =  ""
         var releaseKeyAlias = ""
         var releaseStorePassword = ""
@@ -36,7 +36,7 @@ android {
             properties.load(rootProject.file("local.properties").inputStream())
 
             debugPassword = properties.getProperty("debugKeyPassword")
-            keystore = properties.getProperty("storeFile")
+            releaseStoreFile = properties.getProperty("storeFile")
             releaseKeyPassword = properties.getProperty("keyPassword")
             releaseKeyAlias = properties.getProperty("keyAlias")
             releaseStorePassword = properties.getProperty("storePassword")
@@ -47,14 +47,14 @@ android {
 
 
         create("staging") {
-            storeFile = rootProject.file(keystore)
+            storeFile = rootProject.file("staging.keystore")
             storePassword = System.getenv("DEBUG_KEYSTORE_PW") ?: debugPassword
             keyAlias = "androiddebugkey"
             keyPassword = System.getenv("DEBUG_KEYSTORE_PW") ?: debugPassword
         }
 
         create("release") {
-            storeFile = rootProject.file(keystore)
+            storeFile = rootProject.file(releaseStoreFile)
             storePassword = System.getenv("RELEASE_KEYSTORE_PW") ?: releaseStorePassword
             keyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: releaseKeyAlias
             keyPassword = System.getenv("RELEASE_KEY_PW") ?: releaseKeyPassword
