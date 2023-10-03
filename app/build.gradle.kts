@@ -26,7 +26,7 @@ android {
     signingConfigs {
 
         var debugPassword =  System.getenv("DEBUG_KEYSTORE_PW") ?: ""
-        var releaseStoreFile =  System.getenv("RELEASE_KEYSTORE") ?: ""
+        var releaseStoreFile =  System.getenv("RELEASE_KEYSTORE") ?: "empty"
         var releaseKeyPassword =  System.getenv("RELEASE_KEY_PW") ?: ""
         var releaseKeyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: ""
         var releaseStorePassword = System.getenv("RELEASE_KEYSTORE_PW") ?: ""
@@ -43,8 +43,6 @@ android {
         } catch (e: Exception) {
             println("Warning: local.properties not found. This is fine if this is a CI build.")
         }
-
-
 
         create("staging") {
             storeFile = rootProject.file("staging.keystore")
