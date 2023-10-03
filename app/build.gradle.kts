@@ -24,13 +24,26 @@ android {
     }
 
     signingConfigs {
-        val properties = Properties()
-        properties.load(rootProject.file("local.properties").inputStream())
-        val debugPassword: String = properties.getProperty("debug.keystore.password") ?: ""
-        val releaseStoreFile: String = properties.getProperty("storeFile") ?: ""
-        val releaseKeyPassword: String = properties.getProperty("keyPassword") ?: ""
-        val releaseKeyAlias: String = properties.getProperty("keyAlias") ?: ""
-        val releaseStorePassword: String = properties.getProperty("storePassword") ?: ""
+
+        var debugPassword =  ""
+        var releaseStoreFile =  ""
+        var releaseKeyPassword =  ""
+        var releaseKeyAlias = ""
+        var releaseStorePassword = ""
+
+        try {
+            val properties = Properties()
+            properties.load(rootProject.file("local.properties").inputStream())
+
+            debugPassword = properties.getProperty("debugKeyPassword")
+            releaseStoreFile = properties.getProperty("storeFile")
+            releaseKeyPassword = properties.getProperty("keyPassword")
+            releaseKeyAlias = properties.getProperty("keyAlias")
+            releaseStorePassword = properties.getProperty("storePassword")
+        } catch (e: Exception) {
+            println("Warning: local.properties not found. This is fine if this is a CI build.")
+        }
+
 
 
         create("staging") {
