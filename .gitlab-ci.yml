@@ -20,8 +20,8 @@ before_script:
   - bundle check || bundle install --jobs $(nproc)
 
 stages:
-  - build
   - test
+  - build
   - staging
   - deploy
 

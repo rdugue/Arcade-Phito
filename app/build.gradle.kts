@@ -31,7 +31,7 @@ android {
         }
 
         var debugPassword =  System.getenv("DEBUG_KEYSTORE_PW") ?: ""
-        var releaseStoreFile =  System.getenv("RELEASE_KEYSTORE") ?: "empty"
+        var releaseStoreFile =  System.getenv("RELEASE_KEYSTORE") ?: ""
         var releaseKeyPassword =  System.getenv("RELEASE_KEY_PW") ?: ""
         var releaseKeyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: ""
         var releaseStorePassword = System.getenv("RELEASE_KEYSTORE_PW") ?: ""
@@ -66,7 +66,7 @@ android {
 
     buildTypes {
         getByName("debug") {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("staging")
         }
 
         getByName("release") {
