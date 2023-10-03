@@ -25,6 +25,11 @@ android {
 
     signingConfigs {
 
+        println("Environment variables:")
+        System.getenv().forEach { (key, value) ->
+            println("$key: $value")
+        }
+
         var debugPassword =  System.getenv("DEBUG_KEYSTORE_PW") ?: ""
         var releaseStoreFile =  System.getenv("RELEASE_KEYSTORE") ?: "empty"
         var releaseKeyPassword =  System.getenv("RELEASE_KEY_PW") ?: ""
