@@ -19,16 +19,16 @@ class TicTacToeRepositoryImpl @Inject constructor() : TicTacToeRepository {
                 && board[i][0] == board[i][2]) {
                 return board[i][0]
             }
-            if (board[0][0] != TicTacToeMarkEntity.NONE
-                && board[0][0] == board[1][1]
-                && board[0][0] == board[2][2]) {
-                return board[0][0]
-            }
-            if (board[0][2] != TicTacToeMarkEntity.NONE
-                && board[0][2] == board[1][1]
-                && board[0][2] == board[2][0]) {
-                return board[0][2]
-            }
+        }
+        if (board[0][0] != TicTacToeMarkEntity.NONE
+            && board[0][0] == board[1][1]
+            && board[0][0] == board[2][2]) {
+            return board[0][0]
+        }
+        if (board[0][2] != TicTacToeMarkEntity.NONE
+            && board[0][2] == board[1][1]
+            && board[0][2] == board[2][0]) {
+            return board[0][2]
         }
         return TicTacToeMarkEntity.NONE
     }
@@ -47,18 +47,17 @@ class TicTacToeRepositoryImpl @Inject constructor() : TicTacToeRepository {
 
     override fun getBestMove(
         board: List<Array<TicTacToeMarkEntity>>,
-        isMaxPlayer: Boolean,
         mark: TicTacToeMarkEntity
     ): Pair<Int, Int> {
-        var bestScore = if (isMaxPlayer) Int.MIN_VALUE else Int.MAX_VALUE
+        var bestScore = if (mark == TicTacToeMarkEntity.X) Int.MIN_VALUE else Int.MAX_VALUE
         var bestMove = Pair(-1, -1)
 
         for (x in 0..2) {
             for (y in 0..2) {
                 if (isBlankSquare(board, Pair(x, y))) {
                     board[x][y] = mark
-                    val score = miniMax(board, 0, !isMaxPlayer, mark)
-                    if (isMaxPlayer) {
+                    val score = miniMax(board, 0, mark)
+                    if (mark == TicTacToeMarkEntity.X) {
                         if (score > bestScore) {
                             bestScore = score
                             bestMove = Pair(x, y)
@@ -79,41 +78,54 @@ class TicTacToeRepositoryImpl @Inject constructor() : TicTacToeRepository {
     private fun miniMax(
         board: List<Array<TicTacToeMarkEntity>>,
         depth: Int,
-        isMaxPlayer: Boolean,
         mark: TicTacToeMarkEntity
     ): Int {
-        val winner = getWinner(board)
-        if (winner != TicTacToeMarkEntity.NONE) {
-            return if (winner == mark) 10 - depth else -10 + depth
+        when (getWinner(board)) {
+            TicTacToeMarkEntity.X -> return 10 - depth
+            TicTacToeMarkEntity.O -> return -10 + depth
+            else -> {}
         }
 
         if (isFull(board)) return 0
 
-        val NONE = TicTacToeMarkEntity.NONE
-        return if (isMaxPlayer) {
+        return if (mark == TicTacToeMarkEntity.X) {
             var best = Int.MIN_VALUE
             for (x in 0..2) {
                 for (y in 0..2) {
                     if (isBlankSquare(board, Pair(x, y))) {
                         board[x][y] = mark
-                        best = maxOf(best, miniMax(board, depth+1, false, mark))
-                        board[x][y] = NONE
+                        best = maxOf(
+                            a = best,
+                            b = miniMax(
+                                board = board,
+                                depth = depth+1,
+                                mark = TicTacToeMarkEntity.O
+                            )
+                        )
+                        board[x][y] = TicTacToeMarkEntity.NONE
                     }
                 }
             }
-            best - depth
+            best
         } else {
             var best = Int.MAX_VALUE
             for (x in 0..2) {
                 for (y in 0..2) {
                     if (isBlankSquare(board, Pair(x, y))) {
                         board[x][y] = mark
-                        best = minOf(best, miniMax(board, depth + 1, true, mark))
-                        board[x][y] = NONE
+                        best = minOf(
+                            a = best,
+                            b = miniMax(
+                                board = board,
+                                depth = depth + 1,
+                                mark = TicTacToeMarkEntity.X
+                            )
+                        )
+                        board[x][y] = TicTacToeMarkEntity.NONE
                     }
                 }
             }
-            best + depth
+            best
         }
     }
 }

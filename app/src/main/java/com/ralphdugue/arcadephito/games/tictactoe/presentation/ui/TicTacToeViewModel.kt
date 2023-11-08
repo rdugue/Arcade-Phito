@@ -7,6 +7,8 @@ import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeRepository
 import com.ralphdugue.phitoarch.mvi.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,19 +52,20 @@ class TicTacToeViewModel @Inject constructor(
     }
 
     private suspend fun makeAIMove(): GameState {
-        val bestMove = ticTacToeRepository.getBestMove(
-            board = state.value.grid.getSnapshot(),
-            isMaxPlayer = isMaxPlayer(state.value),
-            mark = state.value.currentTurn
-        )
-        return state.value.copy(
-            grid = state.value.grid.apply {
-                setSquare(bestMove.first, bestMove.second, state.value.currentTurn)
-            },
-            winner = ticTacToeRepository.getWinner(state.value.grid.getSnapshot()),
-            isGameOver = isGameOver(state.value.grid.getSnapshot()),
-            currentTurn = state.value.player.mark
-        )
+        return withContext(Dispatchers.Default){
+            val bestMove = ticTacToeRepository.getBestMove(
+                board = state.value.grid.getSnapshot(),
+                mark = state.value.currentTurn
+            )
+            state.value.copy(
+                grid = state.value.grid.apply {
+                    setSquare(bestMove.first, bestMove.second, state.value.currentTurn)
+                },
+                winner = ticTacToeRepository.getWinner(state.value.grid.getSnapshot()),
+                isGameOver = isGameOver(state.value.grid.getSnapshot()),
+                currentTurn = state.value.player.mark
+            )
+        }
     }
 
     private suspend fun makePlayerMove(square: Pair<Int, Int>): GameState {

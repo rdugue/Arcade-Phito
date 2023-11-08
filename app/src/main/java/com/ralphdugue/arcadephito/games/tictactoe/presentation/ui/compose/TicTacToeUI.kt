@@ -267,26 +267,27 @@ fun PlayerRow(
     ) {
         Row(
             modifier = Modifier
-                .wrapContentWidth()
-                .padding(10.dp),
+                .width(150.dp)
+                .wrapContentHeight()
+                .padding(5.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
             val name = username ?: "JohnDoe"
             AsyncImage(
                 modifier = Modifier
-                    .height(50.dp)
-                    .width(50.dp)
+                    .height(30.dp)
+                    .width(30.dp)
                     .clip(CircleShape),
                 model = imageUrl,
-                placeholder = painterResource(id = R.drawable.profile),
-                fallback = painterResource(id = R.drawable.profile),
-                error = painterResource(id = R.drawable.profile),
+                placeholder = painterResource(id = R.drawable.account),
+                fallback = painterResource(id = R.drawable.account),
+                error = painterResource(id = R.drawable.account),
                 contentDescription = name
             )
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(5.dp))
             Text(text = name, style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(5.dp))
             Image(
                 modifier = Modifier
                     .height(20.dp)

@@ -2,8 +2,8 @@ package com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,7 +32,6 @@ import com.ralphdugue.arcadephito.games.tictactoe.domain.Player
 import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeMarkEntity
 import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeSquareEntity
 import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.GameState
-import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.TicTacToeViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,35 +72,36 @@ fun TicTacToeBoardLandscape(
                 )
                 Row(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(10.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     PlayerRow(
-                        modifier = Modifier.align(Alignment.Top),
+                        modifier = Modifier.align(Alignment.Top).padding(2.dp),
                         username = opponent.userProfileEntity?.username ?: "AI",
                         imageUrl = opponent.userProfileEntity?.imageUrl,
-                        mark = opponent.mark ?: TicTacToeMarkEntity.O
+                        mark = opponent.mark
                     )
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(3),
-                        contentPadding = PaddingValues(5.dp),
                         modifier = Modifier
-                            .width(500.dp)
-                            .height(500.dp),
-                        horizontalArrangement = Arrangement.Center
+                            .width(350.dp)
+                            .fillMaxHeight(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalArrangement = Arrangement.Center
                     ) {
                         squares.forEachIndexed { x, row ->
                             itemsIndexed(row) { y, square ->
                                 val squareState by square.collectAsStateWithLifecycle()
                                 Card(
-                                    modifier = Modifier.padding(4.dp),
+                                    modifier = Modifier.padding(2.dp),
                                     elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                                     shape = RoundedCornerShape(5.dp)
                                 ) {
                                     TicTacToeSquare(
-                                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                                        modifier = Modifier
+                                            .align(Alignment.CenterHorizontally)
+                                            .height(50.dp),
                                         square = squareState
                                     ) { onClickSquare(Pair(x, y)) }
                                 }
@@ -109,10 +109,10 @@ fun TicTacToeBoardLandscape(
                         }
                     }
                     PlayerRow(
-                        modifier = Modifier.align(Alignment.Bottom),
+                        modifier = Modifier.align(Alignment.Bottom).padding(2.dp),
                         username = player.userProfileEntity?.username,
                         imageUrl = player.userProfileEntity?.imageUrl,
-                        mark = player.mark ?: TicTacToeMarkEntity.X
+                        mark = player.mark
                     )
                 }
             }
