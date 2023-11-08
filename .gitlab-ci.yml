@@ -27,6 +27,9 @@ stages:
 
 test:
   stage: test
+  only:
+    - develop
+    - main
   script:
     - bundle exec fastlane test
 
@@ -34,6 +37,8 @@ build:
   stage: build
   script:
     - bundle exec fastlane debug
+  only:
+    - develop
   artifacts:
     paths:
       - app/build/outputs/apk/debug/app-debug.apk

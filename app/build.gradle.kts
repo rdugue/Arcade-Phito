@@ -98,9 +98,11 @@ dependencies {
     implementation(libs.bundles.androidx)
 
     // compose
-    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
+    val composeBom = platform(libs.compose.bom)
+    implementation(composeBom)
     implementation("androidx.compose.ui:ui")
     implementation("androidx.lifecycle:lifecycle-runtime-compose")
+    implementation("androidx.navigation:navigation-compose")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose")
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.ui:ui-tooling-preview")
@@ -117,6 +119,9 @@ dependencies {
     implementation(libs.bundles.hilt)
     ksp(libs.bundles.hilt.ksp)
 
+    // timber
+    implementation(libs.timber)
+
     // firebase
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
     implementation("com.google.firebase:firebase-analytics-ktx")
@@ -124,8 +129,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services")
 
     // testing
-    testImplementation(libs.junit)
+    testImplementation(libs.bundles.test)
     androidTestImplementation(libs.bundles.androidx.test)
+    androidTestImplementation(composeBom)
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

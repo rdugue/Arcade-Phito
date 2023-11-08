@@ -33,14 +33,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.ralphdugue.arcadephito.R
-import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeMark
+import com.ralphdugue.arcadephito.games.tictactoe.domain.Player
+import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeMarkEntity
+import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeSquareEntity
+import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.GameState
+import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.MakeAIMove
+import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.MakePlayerMove
+import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.ResetGame
 import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.TicTacToeViewModel
 import com.ralphdugue.arcadephito.theme.ArcadePhitoTheme
 import com.ralphdugue.arcadephito.util.isLandscapePhone
-import com.ralphdugue.arcadephito.util.isLandscapeTablet
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -75,14 +81,28 @@ fun TicTacToePreview() {
 }
 
 @Composable
+fun TicTacToeScreen(
+    viewModel: TicTacToeViewModel = hiltViewModel(),
+    windowSizeClass: WindowSizeClass,
+    onQuit: () -> Unit = {}
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    TicTacToeGame(
+        windowSizeClass = windowSizeClass,
+        state = state,
+        onClickSquare = { viewModel.onEvent(MakePlayerMove(it)) },
+        onAITurn = { viewModel.onEvent(MakeAIMove) },
+        onDismiss = { playAgain ->
+            viewModel.onEvent(ResetGame)
+            if (!playAgain) onQuit()
+        }
+    )
+}
+
+@Composable
 fun TicTacToeGame(
     windowSizeClass: WindowSizeClass,
-    squares: List<Array<MutableStateFlow<TicTacToeMark>>> = TicTacToeViewModel.GameState().squares,
-    isGameOver: Boolean = false,
-    player: TicTacToeViewModel.Player = TicTacToeViewModel.Player(),
-    opponent: TicTacToeViewModel.Player = TicTacToeViewModel.Player(isAI = true, mark = TicTacToeMark.O),
-    currentTurn: TicTacToeMark = TicTacToeMark.X,
-    winner: TicTacToeMark = TicTacToeMark.BLANK,
+    state: GameState = GameState(),
     onClickSquare: (square: Pair<Int, Int>) -> Unit = {},
     onAITurn: () -> Unit = {},
     onDismiss: (playAgain: Boolean) -> Unit = {}
@@ -90,12 +110,12 @@ fun TicTacToeGame(
     when {
         windowSizeClass.isLandscapePhone() -> {
             TicTacToeBoardLandscape(
-                squares = squares,
-                isGameOver = isGameOver,
-                player = player,
-                opponent = opponent,
-                currentTurn = currentTurn,
-                winner = winner,
+                squares = state.grid.squares,
+                isGameOver = state.isGameOver,
+                player = state.player,
+                opponent = state.opponent,
+                currentTurn = state.currentTurn,
+                winner = state.winner,
                 onClickSquare = onClickSquare,
                 onAITurn = onAITurn,
                 onDismiss = onDismiss
@@ -103,12 +123,12 @@ fun TicTacToeGame(
         }
         else -> {
             TicTacToeBoard(
-                squares = squares,
-                isGameOver = isGameOver,
-                player = player,
-                opponent = opponent,
-                currentTurn = currentTurn,
-                winner = winner,
+                squares = state.grid.squares,
+                isGameOver = state.isGameOver,
+                player = state.player,
+                opponent = state.opponent,
+                currentTurn = state.currentTurn,
+                winner = state.winner,
                 onClickSquare = onClickSquare,
                 onAITurn = onAITurn,
                 onDismiss = onDismiss
@@ -120,12 +140,12 @@ fun TicTacToeGame(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TicTacToeBoard(
-    squares: List<Array<MutableStateFlow<TicTacToeMark>>> = TicTacToeViewModel.GameState().squares,
+    squares: List<Array<MutableStateFlow<TicTacToeSquareEntity>>> = GameState().grid.squares,
     isGameOver: Boolean = false,
-    player: TicTacToeViewModel.Player = TicTacToeViewModel.Player(),
-    opponent: TicTacToeViewModel.Player = TicTacToeViewModel.Player(isAI = true, mark = TicTacToeMark.O),
-    currentTurn: TicTacToeMark = TicTacToeMark.X,
-    winner: TicTacToeMark = TicTacToeMark.BLANK,
+    player: Player = Player(),
+    opponent: Player = Player(isAI = true, mark = TicTacToeMarkEntity.O),
+    currentTurn: TicTacToeMarkEntity = TicTacToeMarkEntity.X,
+    winner: TicTacToeMarkEntity = TicTacToeMarkEntity.NONE,
     onClickSquare: (square: Pair<Int, Int>) -> Unit = {},
     onAITurn: () -> Unit = {},
     onDismiss: (playAgain: Boolean) -> Unit = {}
@@ -162,9 +182,9 @@ fun TicTacToeBoard(
                 ) {
                     PlayerRow(
                         modifier = Modifier.align(Alignment.Start),
-                        username = opponent.userProfile?.username ?: "AI",
-                        imageUrl = opponent.userProfile?.imageUrl,
-                        mark = opponent.mark ?: TicTacToeMark.O
+                        username = opponent.userProfileEntity?.username ?: "AI",
+                        imageUrl = opponent.userProfileEntity?.imageUrl,
+                        mark = opponent.mark
                     )
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(3),
@@ -185,7 +205,7 @@ fun TicTacToeBoard(
                                 ) {
                                     TicTacToeSquare(
                                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                                        mark = squareState
+                                        square = squareState
                                     ) { onClickSquare(Pair(x, y)) }
                                 }
                             }
@@ -193,9 +213,9 @@ fun TicTacToeBoard(
                     }
                     PlayerRow(
                         modifier = Modifier.align(Alignment.End),
-                        username = player.userProfile?.username,
-                        imageUrl = player.userProfile?.imageUrl,
-                        mark = player.mark ?: TicTacToeMark.X
+                        username = player.userProfileEntity?.username,
+                        imageUrl = player.userProfileEntity?.imageUrl,
+                        mark = player.mark
                     )
                 }
             }
@@ -206,19 +226,19 @@ fun TicTacToeBoard(
 @Composable
 fun TicTacToeSquare(
     modifier: Modifier,
-    mark: TicTacToeMark = TicTacToeMark.BLANK,
+    square: TicTacToeSquareEntity = TicTacToeSquareEntity(),
     onClick: () -> Unit
 ) {
-    val imageId = when (mark) {
-        TicTacToeMark.BLANK -> R.drawable.tic_tac_toe_blank
-        TicTacToeMark.X -> R.drawable.x
-        TicTacToeMark.O -> R.drawable.o
+    val imageId = when (square.mark) {
+        TicTacToeMarkEntity.NONE -> R.drawable.tic_tac_toe_blank
+        TicTacToeMarkEntity.X -> R.drawable.x
+        TicTacToeMarkEntity.O -> R.drawable.o
     }
     Box(
         modifier = modifier
             .height(100.dp)
             .width(100.dp)
-            .clickable { if (mark == TicTacToeMark.BLANK) onClick() }
+            .clickable { if (square.mark == TicTacToeMarkEntity.NONE) onClick() }
     ) {
         Image(
             modifier = Modifier
@@ -236,7 +256,7 @@ fun PlayerRow(
     modifier: Modifier,
     username: String?,
     imageUrl: String?,
-    mark: TicTacToeMark
+    mark: TicTacToeMarkEntity
 ) {
     Card(
         modifier = modifier
@@ -272,8 +292,8 @@ fun PlayerRow(
                     .height(20.dp)
                     .width(20.dp),
                 painter = painterResource(id = when (mark) {
-                    TicTacToeMark.X -> R.drawable.x
-                    TicTacToeMark.O -> R.drawable.o
+                    TicTacToeMarkEntity.X -> R.drawable.x
+                    TicTacToeMarkEntity.O -> R.drawable.o
                     else -> R.drawable.tic_tac_toe_blank
                 }),
                 contentDescription = null
@@ -286,7 +306,7 @@ fun PlayerRow(
 @Composable
 fun WinnerDialog(
     modifier: Modifier,
-    winner: TicTacToeMark,
+    winner: TicTacToeMarkEntity,
     onDismiss: (playAgain: Boolean) -> Unit
 ) {
     AlertDialog(onDismissRequest = { onDismiss(false) }) {
@@ -300,8 +320,8 @@ fun WinnerDialog(
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = when (winner) {
-                        TicTacToeMark.X -> stringResource(id = R.string.tictactoe_x_wins)
-                        TicTacToeMark.O -> stringResource(id = R.string.tictactoe_o_wins)
+                        TicTacToeMarkEntity.X -> stringResource(id = R.string.tictactoe_x_wins)
+                        TicTacToeMarkEntity.O -> stringResource(id = R.string.tictactoe_o_wins)
                         else -> stringResource(id = R.string.tictactoe_draw)
                     },
                 )

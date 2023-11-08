@@ -1,9 +1,11 @@
 package com.ralphdugue.arcadephito.games.data
 
-import com.ralphdugue.arcadephito.games.domain.Game
+import com.ralphdugue.arcadephito.games.domain.GameEntity
 import com.ralphdugue.arcadephito.games.domain.GamesRepository
 import javax.inject.Inject
 
 class GamesRepositoryImpl @Inject constructor() : GamesRepository {
-    override fun getGames(): List<Game> = GAMES_LIST.map { it.toGame() }
+    override suspend fun getGames(): Result<List<GameEntity>> {
+        return Result.success(GAMES_LIST.map { it.toGame() })
+    }
 }

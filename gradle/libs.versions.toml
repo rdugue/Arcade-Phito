@@ -1,5 +1,5 @@
 [versions]
-activityCompose = "1.7.2"
+activityCompose = "1.8.0"
 androidx-junit = "1.1.5"
 coil = "2.4.0"
 coreKtx = "1.12.0"
@@ -10,14 +10,18 @@ junit = "4.13.2"
 kotlin = "1.9.0"
 ksp = "1.9.0-1.0.13"
 android-gradle-plugin = "8.1.2"
-google-services-version = "4.3.15"
+google-services-version = "4.4.0"
 hilt = "2.48"
-hiltExt = "1.0.0"
+hiltExt = "1.1.0"
+timber = "5.0.1"
 lifecycleRuntimeKtx = "2.6.2"
-phitoArch = "0.3.3"
+phitoArch = "0.4.1"
 gradle-versions = "0.48.0"
-uiTestJunit4 = "1.5.2"
+uiTestJunit4 = "1.5.4"
 version-catalog-update = "0.8.1"
+turbine = "1.0.0"
+composeBom = "2023.10.01"
+dataStore = "1.0.0"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -39,13 +43,18 @@ junit = { module = "junit:junit", version.ref = "junit" }
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 phito-arch = { module = "com.ralphdugue:phito-arch", version.ref = "phitoArch" }
 ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "uiTestJunit4" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+dataStore = { module = "androidx.datastore:datastore-preferences", version.ref = "dataStore" }
 
 [bundles]
 hilt = ["hilt-android", "hilt-navigation-compose", "hilt-android-gradle-plugin"]
 hilt-ksp = ["hilt-compiler", "dagger-compiler"]
 coil = ["coil", "coil-compose"]
-androidx = ["core-ktx", "core-splashscreen", "activity-compose", "lifecycle-runtime-ktx"]
+androidx = ["core-ktx", "core-splashscreen", "activity-compose", "lifecycle-runtime-ktx", "dataStore"]
 androidx-test = ["ext-junit", "espresso-core", "ui-test-junit4"]
+test = ["junit", "turbine"]
 
 [plugins]
 android-app = { id = "com.android.application", version.ref = "android-gradle-plugin" }

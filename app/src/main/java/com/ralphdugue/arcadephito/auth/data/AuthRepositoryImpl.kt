@@ -1,45 +1,84 @@
 package com.ralphdugue.arcadephito.auth.data
 
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.userProfileChangeRequest
+import com.ralphdugue.arcadephito.auth.domain.AuthDataSource
 import com.ralphdugue.arcadephito.auth.domain.AuthRepository
-import com.ralphdugue.arcadephito.auth.domain.toAuthenticatedUser
-import com.ralphdugue.arcadephito.profile.domain.UserProfile
-import com.ralphdugue.arcadephito.util.Resource
-import kotlinx.coroutines.tasks.await
+import com.ralphdugue.arcadephito.auth.domain.AuthFieldsEntity
+import com.ralphdugue.arcadephito.profile.domain.UserProfileEntity
 import javax.inject.Inject
 
-class AuthRepositoryImpl @Inject constructor(private val auth: FirebaseAuth): AuthRepository {
-
-    override fun userIsSignedIn(): Boolean = auth.currentUser != null
-
-    override fun getCurrentUser(): UserProfile? = auth.currentUser?.toAuthenticatedUser()
-
-    override suspend fun createUserWithEmail(
-        username: String,
-        email: String,
-        password: String
-    ): Resource<UserProfile> = try {
-        val result = auth.createUserWithEmailAndPassword(email, password).await()
-        val profileUpdates = userProfileChangeRequest {
-            displayName = username
+class AuthRepositoryImpl @Inject constructor(
+    private val dataSource: AuthDataSource
+): AuthRepository {
+    override suspend fun getCurrentUser(): Result<UserProfileEntity?> {
+        val credentials = dataSource.getCredentials()
+        return when {
+            credentials.isSuccess -> {
+                val userProfile = credentials.getOrNull()
+                if (userProfile?.username != null) {
+                    Result.success(userProfile)
+                } else {
+                    Result.success(null)
+                }
+            }
+            else -> {
+                Result.failure(credentials.exceptionOrNull() ?: Exception("Unknown error"))
+            }
         }
-        result.user?.updateProfile(profileUpdates)?.await()
-        Resource.Success(data = result.user?.toAuthenticatedUser())
-    } catch (e: Exception) {
-        Resource.Error(errorMessage = e.localizedMessage)
+    }
+
+    override suspend fun signUpWithEmail(
+        authenticationFields: AuthFieldsEntity
+    ): Result<UserProfileEntity> {
+        val result = dataSource.registerRequest(
+            email = authenticationFields.email,
+            username = authenticationFields.username,
+            password = authenticationFields.password
+        )
+        return when {
+            result.isSuccess -> {
+                val token = result.getOrNull()
+                if (token != null) {
+                    dataSource.storeCredentials(
+                        username = authenticationFields.username,
+                        token = token
+                    )
+                    dataSource.getCredentials()
+                } else {
+                    Result.failure(Exception("Unknown error"))
+                }
+            }
+            else -> {
+                Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))
+            }
+        }
     }
 
     override suspend fun signInWithEmail(
-        email: String,
-        password: String
-    ): Resource<UserProfile> = try {
-        val result = auth.signInWithEmailAndPassword(email, password).await()
-        Resource.Success(data = result.user?.toAuthenticatedUser())
-    } catch (e: Exception) {
-        Resource.Error(errorMessage = e.localizedMessage)
+        authenticationFields: AuthFieldsEntity
+    ): Result<UserProfileEntity> {
+        val result = dataSource.loginRequest(
+            username = authenticationFields.username,
+            password = authenticationFields.password
+        )
+        return when {
+            result.isSuccess -> {
+                val token = result.getOrNull()
+                if (token != null) {
+                    dataSource.storeCredentials(
+                        username = authenticationFields.username,
+                        token = token
+                    )
+                    dataSource.getCredentials()
+                } else {
+                    Result.failure(Exception("Unknown error"))
+                }
+            }
+            else -> {
+                Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))
+            }
+        }
     }
 
-    override fun signOut() = auth.signOut()
-
+    override suspend fun signOut(): Result<Unit> = dataSource.clearCredentials()
 }

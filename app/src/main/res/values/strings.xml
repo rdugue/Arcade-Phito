@@ -2,6 +2,7 @@
     <string name="app_name">Arcade Phito</string>
 
     <!-- NAVIGATION -->
+    <string name="login_screen">LOGIN</string>
     <string name="games_screen">GAMES</string>
     <string name="profile_screen">PROFILE</string>
 
@@ -35,5 +36,6 @@
     <string name="tictactoe_draw">It\'s a draw!</string>
     <string name="tictactoe_reset">Play again</string>
     <string name="tictactoe_quit">Quit</string>
+    <string name="tictactoe_screen">Tic-Tac-Toe</string>
 
 </resources>

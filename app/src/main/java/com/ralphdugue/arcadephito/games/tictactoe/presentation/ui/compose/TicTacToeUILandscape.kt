@@ -28,19 +28,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ralphdugue.arcadephito.R
-import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeMark
+import com.ralphdugue.arcadephito.games.tictactoe.domain.Player
+import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeMarkEntity
+import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeSquareEntity
+import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.GameState
 import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.TicTacToeViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TicTacToeBoardLandscape(
-    squares: List<Array<MutableStateFlow<TicTacToeMark>>> = TicTacToeViewModel.GameState().squares,
+    squares: List<Array<MutableStateFlow<TicTacToeSquareEntity>>> = GameState().grid.squares,
     isGameOver: Boolean = false,
-    player: TicTacToeViewModel.Player = TicTacToeViewModel.Player(),
-    opponent: TicTacToeViewModel.Player = TicTacToeViewModel.Player(isAI = true, mark = TicTacToeMark.O),
-    currentTurn: TicTacToeMark = TicTacToeMark.X,
-    winner: TicTacToeMark = TicTacToeMark.BLANK,
+    player: Player = Player(),
+    opponent: Player = Player(isAI = true, mark = TicTacToeMarkEntity.O),
+    currentTurn: TicTacToeMarkEntity = TicTacToeMarkEntity.X,
+    winner: TicTacToeMarkEntity = TicTacToeMarkEntity.NONE,
     onClickSquare: (square: Pair<Int, Int>) -> Unit = {},
     onAITurn: () -> Unit = {},
     onDismiss: (playAgain: Boolean) -> Unit = {}
@@ -77,9 +80,9 @@ fun TicTacToeBoardLandscape(
                 ) {
                     PlayerRow(
                         modifier = Modifier.align(Alignment.Top),
-                        username = opponent.userProfile?.username ?: "AI",
-                        imageUrl = opponent.userProfile?.imageUrl,
-                        mark = opponent.mark ?: TicTacToeMark.O
+                        username = opponent.userProfileEntity?.username ?: "AI",
+                        imageUrl = opponent.userProfileEntity?.imageUrl,
+                        mark = opponent.mark ?: TicTacToeMarkEntity.O
                     )
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(3),
@@ -99,7 +102,7 @@ fun TicTacToeBoardLandscape(
                                 ) {
                                     TicTacToeSquare(
                                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                                        mark = squareState
+                                        square = squareState
                                     ) { onClickSquare(Pair(x, y)) }
                                 }
                             }
@@ -107,9 +110,9 @@ fun TicTacToeBoardLandscape(
                     }
                     PlayerRow(
                         modifier = Modifier.align(Alignment.Bottom),
-                        username = player.userProfile?.username,
-                        imageUrl = player.userProfile?.imageUrl,
-                        mark = player.mark ?: TicTacToeMark.X
+                        username = player.userProfileEntity?.username,
+                        imageUrl = player.userProfileEntity?.imageUrl,
+                        mark = player.mark ?: TicTacToeMarkEntity.X
                     )
                 }
             }

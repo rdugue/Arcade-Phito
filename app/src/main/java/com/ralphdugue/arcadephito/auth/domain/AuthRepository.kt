@@ -1,21 +1,14 @@
 package com.ralphdugue.arcadephito.auth.domain
 
-import com.ralphdugue.arcadephito.profile.domain.UserProfile
-import com.ralphdugue.arcadephito.util.Resource
+import com.ralphdugue.arcadephito.profile.domain.UserProfileEntity
 
 interface AuthRepository {
 
-    fun userIsSignedIn(): Boolean
+    suspend fun getCurrentUser(): Result<UserProfileEntity?>
 
-    fun getCurrentUser(): UserProfile?
+    suspend fun signUpWithEmail(authenticationFields: AuthFieldsEntity): Result<UserProfileEntity>
 
-    suspend fun createUserWithEmail(
-        username: String,
-        email: String,
-        password: String
-    ): Resource<UserProfile>
+    suspend fun signInWithEmail(authenticationFields: AuthFieldsEntity): Result<UserProfileEntity>
 
-    suspend fun signInWithEmail(email: String, password: String): Resource<UserProfile>
-
-    fun signOut()
+    suspend fun signOut(): Result<Unit>
 }

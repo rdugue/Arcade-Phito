@@ -4,7 +4,6 @@ buildscript {
     }
 }
 plugins {
-    //alias(libs.plugins.android.app)
     id("com.android.application") version "8.1.2" apply false
     alias(libs.plugins.gradle.versions)
     alias(libs.plugins.version.catalog.update)

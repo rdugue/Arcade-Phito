@@ -1,50 +1,83 @@
 package com.ralphdugue.arcadephito.games.tictactoe.presentation.ui
 
-import android.util.Log
+import com.ralphdugue.arcadephito.auth.domain.AuthRepository
 import com.ralphdugue.arcadephito.di.modules.IoDispatcher
-import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeMark
-import com.ralphdugue.arcadephito.profile.domain.UserProfile
+import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeMarkEntity
+import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeRepository
 import com.ralphdugue.phitoarch.mvi.BaseViewModel
-import com.ralphdugue.phitoarch.mvi.BaseViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
 class TicTacToeViewModel @Inject constructor(
-    eventHandler: TicTacToeEventHandler,
+    private val ticTacToeRepository: TicTacToeRepository,
+    private val authRepository: AuthRepository,
     @IoDispatcher ioDispatcher: CoroutineDispatcher
-): BaseViewModel<TicTacToeIntent, TicTacToeViewModel.GameState>(eventHandler, ioDispatcher){
+): BaseViewModel<TicTacToeEvent, GameState, TicTacToeEffect>(ioDispatcher){
+    override fun createEffect(throwable: Throwable): TicTacToeEffect =
+        TicTacToeEffect(message = throwable.localizedMessage ?: "Unknown error")
 
-    enum class TICTACTOETURN {
-        FIRST, SECOND, RANDOM
+    override fun createInitialState(): GameState = GameState()
+
+    override suspend fun handleEvent(event: TicTacToeEvent): GameState = when(event) {
+        is ChooseMark -> TODO()
+        is ChooseTurn -> TODO()
+        LoadPlayers -> loadPlayers()
+        MakeAIMove -> makeAIMove()
+        is MakePlayerMove -> makePlayerMove(event.square)
+        ResetGame -> GameState(
+            isLoading = false,
+            isGameOver = false,
+            player = state.value.player,
+            opponent = state.value.opponent,
+        )
     }
 
-    data class Player(
-        val mark: TicTacToeMark = TicTacToeMark.X,
-        val userProfile: UserProfile? = null,
-        val isAI: Boolean = false
-    )
-
-    data class GameState(
-        val squares: List<Array<MutableStateFlow<TicTacToeMark>>> = List(3) {
-            Array(3) {
-                MutableStateFlow(TicTacToeMark.BLANK)
+    private suspend fun loadPlayers(): GameState {
+        val result = authRepository.getCurrentUser()
+        return when {
+            result.isSuccess -> {
+                state.value.copy(
+                    player = state.value.player.copy(userProfileEntity = result.getOrNull()!!),
+                    isLoading = false
+                )
             }
-        },
-        val firstTurn: TicTacToeMark = TicTacToeMark.X,
-        val currentTurn: TicTacToeMark = TicTacToeMark.X,
-        val isGameOver: Boolean = false,
-        val player: Player = Player(),
-        val opponent: Player = Player(isAI = true, mark = TicTacToeMark.O),
-        val winner: TicTacToeMark = TicTacToeMark.BLANK
-    ): BaseViewState
-
-    override fun errorState(throwable: Throwable) {
-        Log.e("TicTacToeViewModel", throwable.message.toString())
+            else -> {
+                throw result.exceptionOrNull()!!
+            }
+        }
     }
 
-    override fun initialState() = GameState()
+    private suspend fun makeAIMove(): GameState {
+        val bestMove = ticTacToeRepository.getBestMove(
+            board = state.value.grid.getSnapshot(),
+            isMaxPlayer = isMaxPlayer(state.value),
+            mark = state.value.currentTurn
+        )
+        return state.value.copy(
+            grid = state.value.grid.apply {
+                setSquare(bestMove.first, bestMove.second, state.value.currentTurn)
+            },
+            winner = ticTacToeRepository.getWinner(state.value.grid.getSnapshot()),
+            isGameOver = isGameOver(state.value.grid.getSnapshot()),
+            currentTurn = state.value.player.mark
+        )
+    }
+
+    private suspend fun makePlayerMove(square: Pair<Int, Int>): GameState {
+        return state.value.copy(
+            grid = state.value.grid.apply {
+                setSquare(square.first, square.second, state.value.currentTurn)
+            },
+            winner = ticTacToeRepository.getWinner(state.value.grid.getSnapshot()),
+            isGameOver = isGameOver(state.value.grid.getSnapshot()),
+            currentTurn = state.value.opponent.mark
+        )
+    }
+
+    private fun isMaxPlayer(state: GameState) = with(state) { firstTurn == currentTurn }
+
+    private fun isGameOver(squares: List<Array<TicTacToeMarkEntity>>) =
+        ticTacToeRepository.getWinner(squares) != TicTacToeMarkEntity.NONE || ticTacToeRepository.isFull(squares)
 }

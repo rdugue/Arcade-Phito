@@ -2,18 +2,18 @@ package com.ralphdugue.arcadephito.games.tictactoe.domain
 
 interface TicTacToeRepository {
 
-    fun getWinner(board: List<Array<TicTacToeMark>>): TicTacToeMark
+    fun getWinner(board: List<Array<TicTacToeMarkEntity>>): TicTacToeMarkEntity
 
-    fun isFull(board: List<Array<TicTacToeMark>>): Boolean
+    fun isFull(board: List<Array<TicTacToeMarkEntity>>): Boolean
 
     fun isBlankSquare(
-        board: List<Array<TicTacToeMark>>,
+        board: List<Array<TicTacToeMarkEntity>>,
         square: Pair<Int, Int>
     ): Boolean
 
     fun getBestMove(
-        board: List<Array<TicTacToeMark>>,
+        board: List<Array<TicTacToeMarkEntity>>,
         isMaxPlayer: Boolean,
-        mark: TicTacToeMark
+        mark: TicTacToeMarkEntity
     ): Pair<Int, Int>
 }

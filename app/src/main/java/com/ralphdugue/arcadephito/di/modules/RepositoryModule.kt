@@ -6,10 +6,13 @@ import com.ralphdugue.arcadephito.games.data.GamesRepositoryImpl
 import com.ralphdugue.arcadephito.games.domain.GamesRepository
 import com.ralphdugue.arcadephito.games.tictactoe.data.TicTacToeRepositoryImpl
 import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeRepository
+import com.ralphdugue.arcadephito.navigation.adapters.AppNavigatorImpl
+import com.ralphdugue.arcadephito.navigation.domain.AppNavigator
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -23,4 +26,8 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun provideTicTacToeRepository(ticTacToeRepositoryImpl: TicTacToeRepositoryImpl): TicTacToeRepository
+
+    @Binds
+    @Singleton
+    abstract fun providesAppNavigator(appNavigatorImpl: AppNavigatorImpl): AppNavigator
 }
