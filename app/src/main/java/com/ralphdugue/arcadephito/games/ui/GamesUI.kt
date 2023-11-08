@@ -12,21 +12,24 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ralphdugue.arcadephito.theme.ArcadePhitoTheme
 import com.ralphdugue.arcadephito.games.data.GAMES_LIST
 import com.ralphdugue.arcadephito.games.data.toGame
 import com.ralphdugue.arcadephito.games.domain.GameEntity
 import com.ralphdugue.arcadephito.games.domain.GameType
-import com.ralphdugue.arcadephito.theme.ArcadePhitoTheme
 import com.ralphdugue.arcadephito.util.LoadingCircle
+import com.ralphdugue.arcadephito.util.errorSnackbar
 
 @Preview(showBackground = true)
 @Composable
@@ -37,9 +40,28 @@ fun GamesListPreview() {
 }
 
 @Composable
-fun GamesScreen(viewModel: GamesViewModel = hiltViewModel(), onClick: (id: GameType) -> Unit) {
+fun GamesScreen(
+    viewModel: GamesViewModel = hiltViewModel(),
+    snackbarHostState: SnackbarHostState,
+    onClick: (id: GameType) -> Unit
+) {
+    val activity = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
+
     GamesList(list = state.games, isLoading = state.isLoading) { onClick(it) }
+
+    LaunchedEffect(activity, viewModel.effect, snackbarHostState) {
+        viewModel.effect.collect { effect ->
+            errorSnackbar(
+                snackbarHostState = snackbarHostState,
+                message = effect.message
+            )
+        }
+    }
+
+    SideEffect {
+        if (state.isLoading) viewModel.onEvent(LoadGames)
+    }
 }
 
 @Composable
@@ -51,7 +73,10 @@ fun GamesList(
     if (isLoading) {
         LoadingCircle()
     }
-    LazyVerticalGrid(columns = GridCells.Fixed(4)) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(4),
+        modifier = Modifier.fillMaxSize()
+    ) {
         items(list) { game ->
             GamesListItem(gameEntity = game) { onClick(it) }
         }

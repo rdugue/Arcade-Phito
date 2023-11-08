@@ -9,8 +9,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,10 +27,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.ralphdugue.arcadephito.theme.ArcadePhitoTheme
 import com.ralphdugue.arcadephito.R
 import com.ralphdugue.arcadephito.profile.domain.UserProfileEntity
-import com.ralphdugue.arcadephito.theme.ArcadePhitoTheme
 import com.ralphdugue.arcadephito.util.LoadingCircle
+import com.ralphdugue.arcadephito.util.errorSnackbar
 
 @Preview(showBackground = true)
 @Composable
@@ -41,12 +45,30 @@ fun  ProfilePreview() {
 }
 
 @Composable
-fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
+fun ProfileScreen(
+    viewModel: ProfileViewModel = hiltViewModel(),
+    snackbarHostState: SnackbarHostState
+) {
+    val activity = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
+
     ProfilePage(
         userProfileEntity = state.userProfile,
         isLoading = state.isLoading,
     )
+
+    LaunchedEffect(activity, viewModel.effect, snackbarHostState) {
+        viewModel.effect.collect { effect ->
+            errorSnackbar(
+                snackbarHostState = snackbarHostState,
+                message = effect.message
+            )
+        }
+    }
+
+    SideEffect {
+        if (state.isLoading) viewModel.onEvent(LoadProfile)
+    }
 }
 
 @Composable

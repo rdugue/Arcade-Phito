@@ -16,7 +16,7 @@ class GamesViewModel @Inject constructor(
 ): BaseViewModel<GamesEvent, GamesViewState, GamesEffect>(ioDispatcher) {
 
     init {
-        onEvent(LoadGames)
+        //onEvent(LoadGames)
     }
     override fun createEffect(throwable: Throwable): GamesEffect {
         return GamesEffect(message = throwable.localizedMessage ?: "Unknown error")

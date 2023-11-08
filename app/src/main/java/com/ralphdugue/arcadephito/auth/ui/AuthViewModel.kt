@@ -62,6 +62,14 @@ class AuthViewModel @Inject constructor(
         )
         SetLoading -> state.value.copy(showLoading = true)
         InitAuthState -> updateState()
+        SignOut -> {
+            authRepository.signOut()
+            state.value.copy(
+                isAuthenticated = false,
+                authFields = AuthFieldsEntity(),
+                showLoading = false
+            )
+        }
     }
 
     private suspend fun signInWithEmail(authenticationFields: AuthFieldsEntity): AuthState {

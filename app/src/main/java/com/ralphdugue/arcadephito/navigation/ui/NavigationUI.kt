@@ -2,7 +2,9 @@ package com.ralphdugue.arcadephito.navigation.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.IconButton
 import androidx.compose.material.NavigationRail
@@ -13,6 +15,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -62,7 +65,11 @@ fun NavGraphBuilder.composable(
 }
 
 @Composable
-fun BottomNav(selectedScreen: Destination, onScreenSelected: (Destination) -> Unit) {
+fun BottomNav(
+    selectedScreen: Destination,
+    onLogoutClick: () -> Unit,
+    onScreenSelected: (Destination) -> Unit
+) {
     BottomAppBar(
         modifier = Modifier
     ) {
@@ -76,23 +83,30 @@ fun BottomNav(selectedScreen: Destination, onScreenSelected: (Destination) -> Un
                     modifier = Modifier
                         .background(
                             color = if (screen == selectedScreen) {
-                                MaterialTheme.colorScheme.secondary
+                                MaterialTheme.colorScheme.secondaryContainer
                             } else {
                                 androidx.compose.ui.graphics.Color.Transparent
                             },
-                            shape = MaterialTheme.shapes.large
+                            shape = MaterialTheme.shapes.extraLarge
                         )
                         .padding(0.dp),
                 ) {
                    Icon(
+                       tint = if (screen == selectedScreen) {
+                           MaterialTheme.colorScheme.onSecondaryContainer
+                       } else {
+                           MaterialTheme.colorScheme.onSurfaceVariant
+                       },
                        painter = painterResource(id = screen.resourceIcon),
                        contentDescription = stringResource(id = screen.resourceTitle),
                    )
                 }
             }
-            Row(modifier = Modifier.weight(1f).padding(end = 8.dp), horizontalArrangement = Arrangement.End) {
+            Row(modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp), horizontalArrangement = Arrangement.End) {
                 FloatingActionButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { onLogoutClick() },
                 ) {
                     Icon(imageVector = Icons.Default.Logout, contentDescription = "Logout")
                 }
@@ -102,15 +116,58 @@ fun BottomNav(selectedScreen: Destination, onScreenSelected: (Destination) -> Un
 }
 
 @Composable
-fun NavSideBar(selectedScreen: Destination, onScreenSelected: (Destination) -> Unit) {
-    NavigationRail {
+fun NavSideBar(
+    selectedScreen: Destination,
+    onLogoutClick: () -> Unit,
+    onScreenSelected: (Destination) -> Unit
+) {
+    NavigationRail(backgroundColor = MaterialTheme.colorScheme.surfaceVariant) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp), verticalArrangement = Arrangement.Top
+        ) {
+            FloatingActionButton(
+                onClick = { onLogoutClick() },
+            ) {
+                Icon(imageVector = Icons.Default.Logout, contentDescription = "Logout")
+            }
+        }
         DASHBOARD_SCREENS.forEach { screen ->
             NavigationRailItem(
-                icon = { Icon(painterResource(id = screen.resourceIcon), contentDescription = null) },
-                label = { Text(stringResource(id = screen.resourceTitle)) },
+                icon = {
+                    Icon(
+                        tint = if (screen == selectedScreen) {
+                            MaterialTheme.colorScheme.onSecondaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        painter = painterResource(id = screen.resourceIcon),
+                        contentDescription = null,
+                        modifier = Modifier.background(
+                            color = if (screen == selectedScreen) {
+                                MaterialTheme.colorScheme.secondaryContainer
+                            } else {
+                                androidx.compose.ui.graphics.Color.Transparent
+                            },
+                            shape = MaterialTheme.shapes.large
+                        )
+                    )
+                },
+                label = {
+                    Text(
+                        text = stringResource(id = screen.resourceTitle),
+                        color = if (screen == selectedScreen) {
+                            MaterialTheme.colorScheme.onSecondaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                    )
+                },
                 selected = screen == selectedScreen,
                 onClick = { onScreenSelected(screen) }
             )
         }
+        Spacer(modifier = Modifier.weight(1f))
     }
 }

@@ -15,7 +15,7 @@ class ProfileViewModel @Inject constructor(
 ): BaseViewModel<ProfileEvent, ProfileState, ProfileEffect>(ioDispatcher) {
 
     init {
-        onEvent(LoadProfile)
+        //onEvent(LoadProfile)
     }
 
     override fun createEffect(throwable: Throwable): ProfileEffect =
@@ -38,14 +38,6 @@ class ProfileViewModel @Inject constructor(
                    throw result.exceptionOrNull()!!
                 }
             }
-        }
-        SignOut -> {
-            authRepository.signOut()
-            state.value.copy(
-                userProfile = UserProfileEntity(),
-                isSignedIn = false,
-                isLoading = true
-            )
         }
     }
 

@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -22,18 +23,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.ralphdugue.arcadephito.theme.ArcadePhitoTheme
 import com.ralphdugue.arcadephito.auth.ui.AuthEffect
 import com.ralphdugue.arcadephito.auth.ui.AuthState
 import com.ralphdugue.arcadephito.auth.ui.AuthViewModel
+import com.ralphdugue.arcadephito.auth.ui.SignOut
 import com.ralphdugue.arcadephito.auth.ui.compose.AuthScreen
 import com.ralphdugue.arcadephito.games.domain.GameType
 import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.compose.TicTacToeScreen
 import com.ralphdugue.arcadephito.games.ui.GamesScreen
-import com.ralphdugue.arcadephito.games.ui.GamesViewModel
 import com.ralphdugue.arcadephito.navigation.domain.Destination
 import com.ralphdugue.arcadephito.navigation.domain.NavigationIntent
 import com.ralphdugue.arcadephito.navigation.domain.isDashboardRoute
@@ -41,13 +44,11 @@ import com.ralphdugue.arcadephito.navigation.ui.BottomNav
 import com.ralphdugue.arcadephito.navigation.ui.NavHost
 import com.ralphdugue.arcadephito.navigation.ui.NavSideBar
 import com.ralphdugue.arcadephito.navigation.ui.NavigateTo
+import com.ralphdugue.arcadephito.navigation.ui.NavigationEffect
 import com.ralphdugue.arcadephito.navigation.ui.NavigationState
 import com.ralphdugue.arcadephito.navigation.ui.NavigationViewModel
 import com.ralphdugue.arcadephito.navigation.ui.composable
-import com.ralphdugue.arcadephito.profile.ui.ProfileEffect
 import com.ralphdugue.arcadephito.profile.ui.ProfileScreen
-import com.ralphdugue.arcadephito.profile.ui.ProfileViewModel
-import com.ralphdugue.arcadephito.theme.ArcadePhitoTheme
 import com.ralphdugue.arcadephito.util.errorSnackbar
 import com.ralphdugue.arcadephito.util.isLandscapePhone
 import com.ralphdugue.arcadephito.util.isLandscapeTablet
@@ -65,8 +66,6 @@ class MainActivity : ComponentActivity() {
 
     private val navigationViewModel by viewModels<NavigationViewModel>()
     private val authViewModel by viewModels<AuthViewModel>()
-    private val profileViewModel by viewModels<ProfileViewModel>()
-    private val gamesViewModel by viewModels<GamesViewModel>()
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,8 +83,6 @@ class MainActivity : ComponentActivity() {
                 errorChannel = merge(
                     navigationViewModel.effect,
                     authViewModel.effect,
-                    profileViewModel.effect,
-                    gamesViewModel.effect
                 ),
                 snackbarHostState = snackbarHostState
             )
@@ -96,25 +93,44 @@ class MainActivity : ComponentActivity() {
             ArcadePhitoTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
                 ) {
                     Scaffold(
                         bottomBar = {
                             if (showBottomNav(authState, navigationState, windowSizeClass)) {
-                                BottomNav(selectedScreen = navigationState.currentScreen) { screen ->
+                                BottomNav(
+                                    selectedScreen = navigationState.currentScreen,
+                                    onLogoutClick = {
+                                        authViewModel.onEvent(SignOut)
+                                    },
+                                ) { screen ->
                                     navigationViewModel.onEvent(NavigateTo(screen))
                                 }
                             }
                         },
-                        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+                        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     ) { paddingValues ->
                         Row(modifier = Modifier.padding(paddingValues)) {
                             if (showSideRail(authState, navigationState, windowSizeClass)) {
-                                NavSideBar(selectedScreen = navigationState.currentScreen) { screen ->
+                                NavSideBar(
+                                    selectedScreen = navigationState.currentScreen,
+                                    onLogoutClick = {
+                                        authViewModel.onEvent(SignOut)
+                                    },
+                                ) { screen ->
                                     navigationViewModel.onEvent(NavigateTo(screen))
                                 }
                             }
+                            if (authState.isAuthenticated.not()) {
+                                navigationViewModel.onEvent(NavigateTo(Destination.LoginScreen))
+                            }
                             NavHost(
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .background(
+                                        shape = MaterialTheme.shapes.large,
+                                        color = MaterialTheme.colorScheme.surface
+                                    ),
                                 navController = navController,
                                 startDestination = navigationState.currentScreen,
                             ) {
@@ -127,10 +143,10 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                                 composable(destination = Destination.ProfileScreen) {
-                                    ProfileScreen()
+                                    ProfileScreen(snackbarHostState = snackbarHostState)
                                 }
                                 composable(destination = Destination.GamesScreen) {
-                                    GamesScreen { gameId ->
+                                    GamesScreen(snackbarHostState = snackbarHostState) { gameId ->
                                         when (gameId) {
                                             GameType.TIC_TAC_TOE -> {
                                                 navigationViewModel.onEvent(NavigateTo(Destination.TicTacToeScreen))
@@ -163,7 +179,7 @@ class MainActivity : ComponentActivity() {
                     snackbarHostState = snackbarHostState,
                     message = when (effect) {
                         is AuthEffect -> effect.message
-                        is ProfileEffect -> effect.message
+                        is NavigationEffect -> effect.message
                         else -> "Unknown error"
                     }
                 )

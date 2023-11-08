@@ -13,6 +13,5 @@ data class ProfileState(
 
 sealed interface ProfileEvent : BaseEvent
 data object LoadProfile : ProfileEvent
-data object SignOut : ProfileEvent
 
 data class ProfileEffect(val message: String) : BaseEffect

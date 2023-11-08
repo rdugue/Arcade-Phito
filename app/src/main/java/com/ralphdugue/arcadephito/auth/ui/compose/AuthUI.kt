@@ -10,13 +10,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ralphdugue.arcadephito.theme.ArcadePhitoTheme
 import com.ralphdugue.arcadephito.auth.domain.AuthType
 import com.ralphdugue.arcadephito.auth.domain.AuthFieldsEntity
 import com.ralphdugue.arcadephito.auth.ui.AuthViewModel
 import com.ralphdugue.arcadephito.auth.ui.SignInWithEmail
 import com.ralphdugue.arcadephito.auth.ui.SignUpWithEmail
 import com.ralphdugue.arcadephito.auth.ui.ToggleForm
-import com.ralphdugue.arcadephito.theme.ArcadePhitoTheme
 import com.ralphdugue.arcadephito.util.isLandscapePhone
 import com.ralphdugue.arcadephito.util.isLandscapeTablet
 import com.ralphdugue.arcadephito.util.isPorttaitPhone

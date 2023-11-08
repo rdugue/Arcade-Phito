@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.ralphdugue.arcadephito.theme.ArcadePhitoTheme
 import com.ralphdugue.arcadephito.R
 import com.ralphdugue.arcadephito.games.tictactoe.domain.Player
 import com.ralphdugue.arcadephito.games.tictactoe.domain.TicTacToeMarkEntity
@@ -45,7 +46,6 @@ import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.MakeAIMove
 import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.MakePlayerMove
 import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.ResetGame
 import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.TicTacToeViewModel
-import com.ralphdugue.arcadephito.theme.ArcadePhitoTheme
 import com.ralphdugue.arcadephito.util.isLandscapePhone
 import kotlinx.coroutines.flow.MutableStateFlow
 

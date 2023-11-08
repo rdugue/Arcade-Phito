@@ -18,5 +18,6 @@ data class SignInWithEmail(val authFields: AuthFieldsEntity): AuthEvent
 data class SignUpWithEmail(val authFields: AuthFieldsEntity): AuthEvent
 data object SetLoading: AuthEvent
 data object InitAuthState: AuthEvent
+data object SignOut: AuthEvent
 
 data class AuthEffect(val message: String): BaseEffect
