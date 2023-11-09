@@ -23,6 +23,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +48,7 @@ import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.MakePlayerMove
 import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.ResetGame
 import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.TicTacToeViewModel
 import com.ralphdugue.arcadephito.util.isLandscapePhone
+import com.ralphdugue.arcadephito.util.isLandscapeTablet
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -108,7 +110,7 @@ fun TicTacToeGame(
     onDismiss: (playAgain: Boolean) -> Unit = {}
 ) {
     when {
-        windowSizeClass.isLandscapePhone() -> {
+        windowSizeClass.isLandscapePhone() || windowSizeClass.isLandscapeTablet() -> {
             TicTacToeBoardLandscape(
                 squares = state.grid.squares,
                 isGameOver = state.isGameOver,
@@ -122,7 +124,7 @@ fun TicTacToeGame(
             )
         }
         else -> {
-            TicTacToeBoard(
+            TicTacToeBoardPortrait(
                 squares = state.grid.squares,
                 isGameOver = state.isGameOver,
                 player = state.player,
@@ -139,7 +141,7 @@ fun TicTacToeGame(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TicTacToeBoard(
+fun TicTacToeBoardPortrait(
     squares: List<Array<MutableStateFlow<TicTacToeSquareEntity>>> = GameState().grid.squares,
     isGameOver: Boolean = false,
     player: Player = Player(),
