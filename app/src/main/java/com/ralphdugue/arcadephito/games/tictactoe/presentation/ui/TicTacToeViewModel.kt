@@ -55,6 +55,7 @@ class TicTacToeViewModel @Inject constructor(
         return withContext(Dispatchers.Default){
             val bestMove = ticTacToeRepository.getBestMove(
                 board = state.value.grid.getSnapshot(),
+                isMaxPlayer = isMaxPlayer(),
                 mark = state.value.currentTurn
             )
             state.value.copy(
@@ -79,7 +80,7 @@ class TicTacToeViewModel @Inject constructor(
         )
     }
 
-    private fun isMaxPlayer(state: GameState) = with(state) { firstTurn == currentTurn }
+    private fun isMaxPlayer() = state.value.currentTurn == state.value.firstTurn
 
     private fun isGameOver(squares: List<Array<TicTacToeMarkEntity>>) =
         ticTacToeRepository.getWinner(squares) != TicTacToeMarkEntity.NONE || ticTacToeRepository.isFull(squares)

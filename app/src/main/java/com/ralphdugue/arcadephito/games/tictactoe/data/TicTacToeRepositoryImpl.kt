@@ -47,26 +47,26 @@ class TicTacToeRepositoryImpl @Inject constructor() : TicTacToeRepository {
 
     override fun getBestMove(
         board: List<Array<TicTacToeMarkEntity>>,
+        isMaxPlayer: Boolean,
         mark: TicTacToeMarkEntity
     ): Pair<Int, Int> {
-        var bestScore = if (mark == TicTacToeMarkEntity.X) Int.MIN_VALUE else Int.MAX_VALUE
+        var bestScore = Int.MIN_VALUE
         var bestMove = Pair(-1, -1)
 
         for (x in 0..2) {
             for (y in 0..2) {
                 if (isBlankSquare(board, Pair(x, y))) {
                     board[x][y] = mark
-                    val score = miniMax(board, 0, mark)
-                    if (mark == TicTacToeMarkEntity.X) {
-                        if (score > bestScore) {
-                            bestScore = score
-                            bestMove = Pair(x, y)
-                        }
-                    } else {
-                        if (score < bestScore) {
-                            bestScore = score
-                            bestMove = Pair(x, y)
-                        }
+                    val score = miniMax(
+                        board = board,
+                        depth = 0,
+                        isMaxPlayer = isMaxPlayer,
+                        mark = mark
+                    )
+                    board[x][y] = TicTacToeMarkEntity.NONE
+                    if (score > bestScore) {
+                        bestScore = score
+                        bestMove = Pair(x, y)
                     }
                 }
             }
@@ -78,54 +78,39 @@ class TicTacToeRepositoryImpl @Inject constructor() : TicTacToeRepository {
     private fun miniMax(
         board: List<Array<TicTacToeMarkEntity>>,
         depth: Int,
+        isMaxPlayer: Boolean,
         mark: TicTacToeMarkEntity
     ): Int {
-        when (getWinner(board)) {
-            TicTacToeMarkEntity.X -> return 10 - depth
-            TicTacToeMarkEntity.O -> return -10 + depth
-            else -> {}
+        val winner = getWinner(board)
+        if (winner != TicTacToeMarkEntity.NONE) {
+            return if (!isMaxPlayer) {
+                10
+            } else {
+                -10
+            }
         }
 
         if (isFull(board)) return 0
 
-        return if (mark == TicTacToeMarkEntity.X) {
-            var best = Int.MIN_VALUE
-            for (x in 0..2) {
-                for (y in 0..2) {
-                    if (isBlankSquare(board, Pair(x, y))) {
-                        board[x][y] = mark
-                        best = maxOf(
-                            a = best,
-                            b = miniMax(
-                                board = board,
-                                depth = depth+1,
-                                mark = TicTacToeMarkEntity.O
-                            )
-                        )
-                        board[x][y] = TicTacToeMarkEntity.NONE
+        var bestScore = if (isMaxPlayer) Int.MIN_VALUE else Int.MAX_VALUE
+        for (x in 0..2) {
+            for (y in 0..2) {
+                if (isBlankSquare(board, Pair(x, y))) {
+                    val nextMark = if (mark == TicTacToeMarkEntity.X) TicTacToeMarkEntity.O else {
+                        TicTacToeMarkEntity.X
+                    }
+                    board[x][y] = nextMark
+                    val score = miniMax(board, depth + 1, !isMaxPlayer, nextMark)
+                    board[x][y] = TicTacToeMarkEntity.NONE
+                    bestScore = if (isMaxPlayer) {
+                        maxOf(score, bestScore)
+                    } else {
+                        minOf(score, bestScore)
                     }
                 }
             }
-            best
-        } else {
-            var best = Int.MAX_VALUE
-            for (x in 0..2) {
-                for (y in 0..2) {
-                    if (isBlankSquare(board, Pair(x, y))) {
-                        board[x][y] = mark
-                        best = minOf(
-                            a = best,
-                            b = miniMax(
-                                board = board,
-                                depth = depth + 1,
-                                mark = TicTacToeMarkEntity.X
-                            )
-                        )
-                        board[x][y] = TicTacToeMarkEntity.NONE
-                    }
-                }
-            }
-            best
         }
+
+        return bestScore
     }
 }

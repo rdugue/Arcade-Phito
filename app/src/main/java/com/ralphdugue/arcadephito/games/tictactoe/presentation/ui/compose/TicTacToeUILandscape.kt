@@ -101,7 +101,7 @@ fun TicTacToeBoardLandscape(
                                     TicTacToeSquare(
                                         modifier = Modifier
                                             .align(Alignment.CenterHorizontally)
-                                            .height(50.dp),
+                                            .height(70.dp),
                                         square = squareState
                                     ) { onClickSquare(Pair(x, y)) }
                                 }

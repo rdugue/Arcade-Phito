@@ -13,6 +13,7 @@ interface TicTacToeRepository {
 
     fun getBestMove(
         board: List<Array<TicTacToeMarkEntity>>,
+        isMaxPlayer: Boolean,
         mark: TicTacToeMarkEntity
     ): Pair<Int, Int>
 }
