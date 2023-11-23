@@ -52,10 +52,10 @@ compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeB
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 dataStore = { module = "androidx.datastore:datastore-preferences", version.ref = "dataStore" }
 protobuf-javalite = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
-protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobuf" }
+protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin", version.ref = "protobuf" }
 grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
 grpc-kotlin-stub = { module = "io.grpc:grpc-kotlin-stub", version.ref = "grpcKotlin" }
-protobuf = { module = "io.grpc:grpc-protobuf-lite", version.ref = "grpc" }
+protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
 
 [bundles]
 hilt = ["hilt-android", "hilt-navigation-compose", "hilt-android-gradle-plugin"]

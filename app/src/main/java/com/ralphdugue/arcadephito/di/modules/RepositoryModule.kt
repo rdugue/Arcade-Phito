@@ -19,12 +19,15 @@ import javax.inject.Singleton
 abstract class RepositoryModule {
 
     @Binds
+    @Singleton
     abstract fun providesAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
 
     @Binds
+    @Singleton
     abstract fun provideGamesRepository(gamesRepositoryImpl: GamesRepositoryImpl): GamesRepository
 
     @Binds
+    @Singleton
     abstract fun provideTicTacToeRepository(ticTacToeRepositoryImpl: TicTacToeRepositoryImpl): TicTacToeRepository
 
     @Binds

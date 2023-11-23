@@ -10,7 +10,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class AuthDataSourceImpl @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    private val authRemoteService: AuthRemoteService
 ): AuthDataSource {
     override suspend fun loginRequest(username: String, password: String): Result<String> {
         return Result.success("token")

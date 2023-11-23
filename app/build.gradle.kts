@@ -1,3 +1,4 @@
+import com.google.protobuf.gradle.id
 import com.google.protobuf.gradle.proto
 import java.util.Properties
 
@@ -178,20 +179,12 @@ protobuf {
     generateProtoTasks {
         all().forEach { task ->
             task.plugins {
-                create("java") {
-                    option("lite")
-                }
-                create("grpc") {
-                    option("lite")
-                }
-                create("grpckt") {
-                    option("lite")
-                }
+                id("java")
+                id("grpc")
+                id("grpckt")
             }
             task.builtins {
-                create("kotlin") {
-                    option("lite")
-                }
+                id("kotlin")
             }
         }
     }
