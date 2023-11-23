@@ -8,7 +8,7 @@ espressoCore = "3.5.1"
 javapoet = "1.13.0"
 junit = "4.13.2"
 kotlin = "1.9.20"
-ksp = "1.9.0-1.0.13"
+ksp = "1.9.20-1.0.14"
 android-gradle-plugin = "8.1.4"
 google-services-version = "4.4.0"
 hilt = "2.48"
@@ -22,6 +22,10 @@ version-catalog-update = "0.8.1"
 turbine = "1.0.0"
 composeBom = "2023.10.01"
 dataStore = "1.0.0"
+protobuf-gradle-plugin = "0.9.4"
+protobuf = "3.24.4"
+grpc = "1.59.0"
+grpcKotlin = "1.4.0"
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -47,6 +51,11 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 dataStore = { module = "androidx.datastore:datastore-preferences", version.ref = "dataStore" }
+protobuf-javalite = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
+protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobuf" }
+grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
+grpc-kotlin-stub = { module = "io.grpc:grpc-kotlin-stub", version.ref = "grpcKotlin" }
+protobuf = { module = "io.grpc:grpc-protobuf-lite", version.ref = "grpc" }
 
 [bundles]
 hilt = ["hilt-android", "hilt-navigation-compose", "hilt-android-gradle-plugin"]
@@ -55,6 +64,7 @@ coil = ["coil", "coil-compose"]
 androidx = ["core-ktx", "core-splashscreen", "activity-compose", "lifecycle-runtime-ktx", "dataStore"]
 androidx-test = ["ext-junit", "espresso-core", "ui-test-junit4"]
 test = ["junit", "turbine"]
+grpc = ["grpc-stub", "grpc-kotlin-stub", "protobuf-kotlin", "protobuf", "protobuf-javalite"]
 
 [plugins]
 android-app = { id = "com.android.application", version.ref = "android-gradle-plugin" }
@@ -65,3 +75,5 @@ google-services = { id = "com.google.gms.google-services", version.ref = "google
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 gradle-versions = { id = "com.github.ben-manes.versions", version.ref = "gradle-versions" }
 version-catalog-update = { id = "nl.littlerobots.version-catalog-update", version.ref = "version-catalog-update" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobuf-gradle-plugin" }
+

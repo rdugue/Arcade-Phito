@@ -17,3 +17,4 @@ app/release
 local.properties
 release-keystore.jks
 key.json
+/app/googleapis/

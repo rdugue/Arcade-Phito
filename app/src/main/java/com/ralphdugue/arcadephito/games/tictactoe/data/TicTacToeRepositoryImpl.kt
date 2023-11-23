@@ -84,9 +84,9 @@ class TicTacToeRepositoryImpl @Inject constructor() : TicTacToeRepository {
         val winner = getWinner(board)
         if (winner != TicTacToeMarkEntity.NONE) {
             return if (!isMaxPlayer) {
-                10
+                10 - depth
             } else {
-                -10
+                -10 + depth
             }
         }
 

@@ -1,3 +1,4 @@
+import com.google.protobuf.gradle.proto
 import java.util.Properties
 
 plugins {
@@ -6,11 +7,43 @@ plugins {
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.protobuf)
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 android {
     namespace = "com.ralphdugue.arcadephito"
     compileSdk = 34
+
+    var apiKey = System.getenv("API_KEY") ?: ""
+    var apiSecret = System.getenv("API_SECRET") ?: ""
+    var apiUrl = System.getenv("API_URL") ?: ""
+
+    var debugPassword =  System.getenv("DEBUG_KEYSTORE_PW") ?: ""
+    var releaseStoreFile =  System.getenv("RELEASE_KEYSTORE") ?: ""
+    var releaseKeyPassword =  System.getenv("RELEASE_KEY_PW") ?: ""
+    var releaseKeyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: ""
+    var releaseStorePassword = System.getenv("RELEASE_KEYSTORE_PW") ?: ""
+
+    try {
+        val properties = Properties()
+        properties.load(rootProject.file("local.properties").inputStream())
+
+        apiKey = properties.getProperty("apiKey")
+        apiSecret = properties.getProperty("apiSecret")
+        apiUrl = properties.getProperty("apiUrl")
+
+        debugPassword = properties.getProperty("debugKeyPassword")
+        releaseStoreFile = properties.getProperty("storeFile")
+        releaseKeyPassword = properties.getProperty("keyPassword")
+        releaseKeyAlias = properties.getProperty("keyAlias")
+        releaseStorePassword = properties.getProperty("storePassword")
+    } catch (e: Exception) {
+        println("Warning: local.properties not found. This is fine if this is a CI build.")
+    }
 
     defaultConfig {
         applicationId = "com.ralphdugue.arcadephito"
@@ -21,34 +54,13 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+
+        buildConfigField("String", "API_KEY", apiKey)
+        buildConfigField("String", "API_SECRET", apiSecret)
+        buildConfigField("String", "API_URL", apiUrl)
     }
 
     signingConfigs {
-
-        println("Environment variables:")
-        System.getenv().forEach { (key, value) ->
-            println("$key: $value")
-        }
-
-        var debugPassword =  System.getenv("DEBUG_KEYSTORE_PW") ?: ""
-        var releaseStoreFile =  System.getenv("RELEASE_KEYSTORE") ?: ""
-        var releaseKeyPassword =  System.getenv("RELEASE_KEY_PW") ?: ""
-        var releaseKeyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: ""
-        var releaseStorePassword = System.getenv("RELEASE_KEYSTORE_PW") ?: ""
-
-        try {
-            val properties = Properties()
-            properties.load(rootProject.file("local.properties").inputStream())
-
-            debugPassword = properties.getProperty("debugKeyPassword")
-            releaseStoreFile = properties.getProperty("storeFile")
-            releaseKeyPassword = properties.getProperty("keyPassword")
-            releaseKeyAlias = properties.getProperty("keyAlias")
-            releaseStorePassword = properties.getProperty("storePassword")
-        } catch (e: Exception) {
-            println("Warning: local.properties not found. This is fine if this is a CI build.")
-        }
-
         create("staging") {
             storeFile = rootProject.file("staging.keystore")
             storePassword = debugPassword
@@ -89,6 +101,14 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.4"
     }
+
+    sourceSets {
+        getByName("main") {
+            proto {
+                srcDir("src/main/proto")
+            }
+        }
+    }
 }
 
 dependencies {
@@ -122,6 +142,9 @@ dependencies {
     // timber
     implementation(libs.timber)
 
+    // grpc
+    implementation(libs.bundles.grpc)
+
     // firebase
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
     implementation("com.google.firebase:firebase-analytics-ktx")
@@ -137,3 +160,39 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
 
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.24.1"
+    }
+    plugins {
+        create("java") {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.59.0"
+        }
+        create("grpc") {
+            artifact = "io.grpc:protoc-gen-grpc-java:1.59.0"
+        }
+        create("grpckt") {
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:1.4.0:jdk8@jar"
+        }
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.plugins {
+                create("java") {
+                    option("lite")
+                }
+                create("grpc") {
+                    option("lite")
+                }
+                create("grpckt") {
+                    option("lite")
+                }
+            }
+            task.builtins {
+                create("kotlin") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
