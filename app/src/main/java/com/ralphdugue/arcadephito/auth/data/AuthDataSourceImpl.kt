@@ -3,10 +3,14 @@ package com.ralphdugue.arcadephito.auth.data
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import com.ralphdugue.arcadephito.auth.data.grpc.AuthRemoteService
 import com.ralphdugue.arcadephito.auth.domain.AuthDataSource
+import com.ralphdugue.arcadephito.auth.domain.AuthUserEntity
 import com.ralphdugue.arcadephito.profile.domain.UserProfileEntity
 import kotlinx.coroutines.flow.first
 import timber.log.Timber
+import user.authenticateUserRequest
+import user.createUserRequest
 import javax.inject.Inject
 
 class AuthDataSourceImpl @Inject constructor(
@@ -14,15 +18,43 @@ class AuthDataSourceImpl @Inject constructor(
     private val authRemoteService: AuthRemoteService
 ): AuthDataSource {
     override suspend fun loginRequest(username: String, password: String): Result<String> {
-        return Result.success("token")
+        val request = authenticateUserRequest {
+            this.name = username
+            this.password = password
+        }
+        return try {
+            val response = authRemoteService.methods.authenticateUser(request)
+            if (response.status.code == 200) {
+                Result.success(response.token)
+            } else {
+                Result.failure(Exception("Error authenticating user: ${response.status.message}"))
+            }
+        } catch (e: Exception) {
+            Timber.e("Error authenticating user: ${e.message}")
+            Result.failure(e)
+        }
     }
-
     override suspend fun registerRequest(
         email: String,
         username: String,
         password: String
     ): Result<String> {
-        return Result.success("token")
+        val request = createUserRequest {
+            this.name = username
+            this.password = password
+            this.email = email
+        }
+        return try {
+            val response = authRemoteService.methods.createUser(request)
+            if (response.status.code == 200) {
+                Result.success(response.token)
+            } else {
+                Result.failure(Exception("Error registering user: ${response.status.message}"))
+            }
+        } catch (e: Exception) {
+            Timber.e("Error registering user: ${e.message}")
+            Result.failure(e)
+        }
     }
 
     override suspend fun storeCredentials(username: String, token: String): Result<Unit> {
@@ -51,12 +83,12 @@ class AuthDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getCredentials(): Result<UserProfileEntity> {
+    override suspend fun getCredentials(): Result<AuthUserEntity> {
         return try {
             val preferences = dataStore.data.first()
             val username = preferences[UserProfileEntity.USERNAME_KEY]
             val token = preferences[UserProfileEntity.TOKEN_KEY]
-            Result.success(UserProfileEntity(username = username, email = token))
+            Result.success(AuthUserEntity(username, token))
         } catch (e: Exception) {
             Timber.e("Error getting credentials: ${e.message}")
             Result.failure(e)

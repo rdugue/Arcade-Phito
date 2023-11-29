@@ -145,6 +145,7 @@ dependencies {
 
     // grpc
     implementation(libs.bundles.grpc)
+    runtimeOnly(libs.grpc.okhttp)
 
     // firebase
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))

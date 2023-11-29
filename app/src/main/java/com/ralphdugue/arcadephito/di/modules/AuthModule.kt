@@ -22,10 +22,6 @@ object AuthModule {
 
     @Singleton
     @Provides
-    fun providesFirebaseAuth() = Firebase.auth
-
-    @Singleton
-    @Provides
     fun provideDataStore(@ApplicationContext appContext: Context): DataStore<Preferences> =
         PreferenceDataStoreFactory.create { appContext.preferencesDataStoreFile(DATA_STORE_NAME) }
 }

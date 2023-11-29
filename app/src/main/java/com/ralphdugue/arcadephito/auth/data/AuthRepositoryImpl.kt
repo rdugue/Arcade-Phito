@@ -1,22 +1,21 @@
 package com.ralphdugue.arcadephito.auth.data
 
-import com.google.firebase.auth.FirebaseAuth
 import com.ralphdugue.arcadephito.auth.domain.AuthDataSource
-import com.ralphdugue.arcadephito.auth.domain.AuthRepository
 import com.ralphdugue.arcadephito.auth.domain.AuthFieldsEntity
-import com.ralphdugue.arcadephito.profile.domain.UserProfileEntity
+import com.ralphdugue.arcadephito.auth.domain.AuthRepository
+import com.ralphdugue.arcadephito.auth.domain.AuthUserEntity
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val dataSource: AuthDataSource
 ): AuthRepository {
-    override suspend fun getCurrentUser(): Result<UserProfileEntity?> {
+    override suspend fun getCurrentUser(): Result<AuthUserEntity?> {
         val credentials = dataSource.getCredentials()
         return when {
             credentials.isSuccess -> {
-                val userProfile = credentials.getOrNull()
-                if (userProfile?.username != null) {
-                    Result.success(userProfile)
+                val authUserEntity = credentials.getOrNull()
+                if (authUserEntity?.username != null) {
+                    Result.success(authUserEntity)
                 } else {
                     Result.success(null)
                 }
@@ -29,7 +28,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun signUpWithEmail(
         authenticationFields: AuthFieldsEntity
-    ): Result<UserProfileEntity> {
+    ): Result<AuthUserEntity> {
         val result = dataSource.registerRequest(
             email = authenticationFields.email,
             username = authenticationFields.username,
@@ -56,7 +55,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun signInWithEmail(
         authenticationFields: AuthFieldsEntity
-    ): Result<UserProfileEntity> {
+    ): Result<AuthUserEntity> {
         val result = dataSource.loginRequest(
             username = authenticationFields.username,
             password = authenticationFields.password

@@ -2,6 +2,8 @@ package com.ralphdugue.arcadephito.di.modules
 
 import com.ralphdugue.arcadephito.auth.domain.AuthRepository
 import com.ralphdugue.arcadephito.auth.data.AuthRepositoryImpl
+import com.ralphdugue.arcadephito.config.data.ConfigRepositoryImpl
+import com.ralphdugue.arcadephito.config.domain.ConfigRepository
 import com.ralphdugue.arcadephito.games.data.GamesRepositoryImpl
 import com.ralphdugue.arcadephito.games.domain.GamesRepository
 import com.ralphdugue.arcadephito.games.tictactoe.data.TicTacToeRepositoryImpl
@@ -33,4 +35,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun providesAppNavigator(appNavigatorImpl: AppNavigatorImpl): AppNavigator
+
+    @Binds
+    @Singleton
+    abstract fun providesConfigRepository(configRepositoryImpl: ConfigRepositoryImpl): ConfigRepository
 }

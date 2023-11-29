@@ -31,8 +31,8 @@ class AuthViewModel @Inject constructor(
             val result = authRepository.getCurrentUser()
             when {
                 result.isSuccess -> {
-                    val userProfileEntity = result.getOrNull()
-                    if (userProfileEntity != null) {
+                    val authEntity = result.getOrNull()
+                    if (authEntity != null) {
                         state.value.copy(
                             isAuthenticated = true,
                             authFields = AuthFieldsEntity(

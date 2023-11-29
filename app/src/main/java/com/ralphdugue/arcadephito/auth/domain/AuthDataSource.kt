@@ -12,5 +12,5 @@ interface AuthDataSource {
 
     suspend fun clearCredentials(): Result<Unit>
 
-    suspend fun getCredentials(): Result<UserProfileEntity>
+    suspend fun getCredentials(): Result<AuthUserEntity>
 }

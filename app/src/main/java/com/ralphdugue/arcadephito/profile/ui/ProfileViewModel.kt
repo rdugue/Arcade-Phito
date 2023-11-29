@@ -2,6 +2,7 @@ package com.ralphdugue.arcadephito.profile.ui
 
 import com.ralphdugue.arcadephito.auth.domain.AuthRepository
 import com.ralphdugue.arcadephito.di.modules.IoDispatcher
+import com.ralphdugue.arcadephito.profile.domain.UserProfileEntity
 import com.ralphdugue.phitoarch.mvi.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -24,7 +25,11 @@ class ProfileViewModel @Inject constructor(
             when {
                 result.isSuccess -> {
                     state.value.copy(
-                        userProfile = result.getOrNull()!!,
+                        userProfile = result.getOrNull()!!.let { user ->
+                            UserProfileEntity(
+                                username = user.username,
+                            )
+                         },
                         isSignedIn = true,
                         isLoading = false
                     )

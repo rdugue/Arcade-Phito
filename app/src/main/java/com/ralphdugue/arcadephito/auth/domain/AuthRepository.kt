@@ -4,11 +4,11 @@ import com.ralphdugue.arcadephito.profile.domain.UserProfileEntity
 
 interface AuthRepository {
 
-    suspend fun getCurrentUser(): Result<UserProfileEntity?>
+    suspend fun getCurrentUser(): Result<AuthUserEntity?>
 
-    suspend fun signUpWithEmail(authenticationFields: AuthFieldsEntity): Result<UserProfileEntity>
+    suspend fun signUpWithEmail(authenticationFields: AuthFieldsEntity): Result<AuthUserEntity>
 
-    suspend fun signInWithEmail(authenticationFields: AuthFieldsEntity): Result<UserProfileEntity>
+    suspend fun signInWithEmail(authenticationFields: AuthFieldsEntity): Result<AuthUserEntity>
 
     suspend fun signOut(): Result<Unit>
 }
