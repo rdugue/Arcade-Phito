@@ -19,7 +19,8 @@ jobs:
           - name: Grant execute permission for gradlew
             run: chmod +x ./gradlew
           - name: Setup Ruby
-            run: |
-              sudo apt-get update
-              sudo apt-get install -y ruby-full ruby-bundler build-essential
-              gem install bundler
+            uses: ruby/setup-ruby@v1
+            with:
+              bundler-cache: true
+          - name: Update fastlane
+            run: bundle update fastlane
