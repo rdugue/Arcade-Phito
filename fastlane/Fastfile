@@ -26,10 +26,10 @@ platform :android do
     gradle(task: "clean assembleDebug")
   end
 
-  desc "Submit a new Beta Build to Crashlytics Beta"
+  desc "Submit a new Beta Build to Google Play Beta"
   lane :beta do
     gradle(task: "clean assembleRelease")
-    crashlytics
+    upload_to_play_store(track: 'beta')
   
     # sh "your_script.sh"
     # You can also use other beta testing services here
