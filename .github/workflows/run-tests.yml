@@ -9,11 +9,12 @@ on:
       - main
 
 jobs:
+    call-setup-fastlane:
+        name: Call Setup Fastlane
+        uses: rdugue/Phito-Arch/.github/workflows/setup-fastlane.yml@main
     run-tests:
         name: Run Tests
         runs-on: ubuntu-latest
         steps:
-          - name: Setup fastlane
-            uses: rdugue/Phito-Arch/.github/workflows/setup-fastlane.yml@main
           - name: Run tests
             run: bundle exec fastlane test
