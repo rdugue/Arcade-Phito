@@ -1,3 +1,5 @@
+import java.util.Properties
+
 pluginManagement {
     repositories {
         google()
@@ -10,7 +12,16 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven("https://gitlab.com/api/v4/projects/42441938/packages/maven")
+        maven {
+            val properties = Properties()
+            properties.load(File(rootProject.projectDir, "local.properties").inputStream())
+
+            url = uri("https://maven.pkg.github.com/rdugue/Phito-Arch")
+            credentials {
+                username = properties.getProperty("GITHUB_ACTOR") ?: System.getenv("GITHUB_ACTOR")
+                password = properties.getProperty("GITHUB_TOKEN") ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
 }
 rootProject.name = "ArcadePhito"

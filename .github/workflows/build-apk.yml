@@ -1,0 +1,17 @@
+name: build-apk
+run-name: Build APK
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+    build-apk:
+        name: Build APK
+        runs-on: ubuntu-latest
+        steps:
+          - name: Setup fastlane
+            uses: rdugue/Phito-Arch/.github/workflows/setup-fastlane.yml@main
+          - name: Build APK
+            run: bundle exec fastlane debug
