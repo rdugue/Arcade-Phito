@@ -1,0 +1,22 @@
+name: deploy-production
+run-name: Deploy Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+    deploy-production:
+        name: Deploy Production
+        runs-on: ubuntu-latest
+        steps:
+          - name: Setup fastlane
+            uses: rdugue/Phito-Arch/.github/workflows/setup-fastlane.yml@main
+          - name: Create Google Services Key
+            run: echo $GOOGLE_SERVICES_KEY > key.json
+          - name: Deploy Production
+            run: bundle exec fastlane deploy
+
+env:
+  GOOGLE_SERVICES_KEY: ${{ secrets.GOOGLE_SERVICES_KEY }}

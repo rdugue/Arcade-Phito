@@ -1,0 +1,22 @@
+name: deploy-staging
+run-name: Deploy Staging
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+    deploy-staging:
+        name: Deploy Staging
+        runs-on: ubuntu-latest
+        steps:
+          - name: Setup fastlane
+            uses: rdugue/Phito-Arch/.github/workflows/setup-fastlane.yml@main
+          - name: Create Google Services Key
+            run: echo $GOOGLE_SERVICES_KEY > key.json
+          - name: Deploy Staging
+            run: bundle exec fastlane beta
+
+env:
+  GOOGLE_SERVICES_KEY: ${{ secrets.GOOGLE_SERVICES_KEY }}
