@@ -1,4 +1,4 @@
-package com.ralphdugue.arcadephito.games.domain
+package com.ralphdugue.arcadephito.games.domain.entities
 
 import androidx.annotation.DrawableRes
 

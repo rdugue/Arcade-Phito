@@ -26,8 +26,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ralphdugue.arcadephito.theme.ArcadePhitoTheme
 import com.ralphdugue.arcadephito.games.data.GAMES_LIST
 import com.ralphdugue.arcadephito.games.data.toGame
-import com.ralphdugue.arcadephito.games.domain.GameEntity
-import com.ralphdugue.arcadephito.games.domain.GameType
+import com.ralphdugue.arcadephito.games.domain.entities.GameEntity
+import com.ralphdugue.arcadephito.games.domain.entities.GameType
 import com.ralphdugue.arcadephito.util.LoadingCircle
 import com.ralphdugue.arcadephito.util.errorSnackbar
 

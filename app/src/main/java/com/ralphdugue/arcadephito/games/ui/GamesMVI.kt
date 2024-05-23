@@ -1,6 +1,6 @@
 package com.ralphdugue.arcadephito.games.ui
 
-import com.ralphdugue.arcadephito.games.domain.GameEntity
+import com.ralphdugue.arcadephito.games.domain.entities.GameEntity
 import com.ralphdugue.phitoarch.mvi.BaseEffect
 import com.ralphdugue.phitoarch.mvi.BaseEvent
 import com.ralphdugue.phitoarch.mvi.BaseViewState

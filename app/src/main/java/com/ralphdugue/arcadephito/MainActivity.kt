@@ -34,7 +34,7 @@ import com.ralphdugue.arcadephito.auth.ui.AuthState
 import com.ralphdugue.arcadephito.auth.ui.AuthViewModel
 import com.ralphdugue.arcadephito.auth.ui.SignOut
 import com.ralphdugue.arcadephito.auth.ui.compose.AuthScreen
-import com.ralphdugue.arcadephito.games.domain.GameType
+import com.ralphdugue.arcadephito.games.domain.entities.GameType
 import com.ralphdugue.arcadephito.games.tictactoe.presentation.ui.compose.TicTacToeScreen
 import com.ralphdugue.arcadephito.games.ui.GamesScreen
 import com.ralphdugue.arcadephito.navigation.domain.Destination

@@ -1,6 +1,6 @@
 package com.ralphdugue.arcadephito.games.data
 
-import com.ralphdugue.arcadephito.games.domain.GameEntity
+import com.ralphdugue.arcadephito.games.domain.entities.GameEntity
 import com.ralphdugue.arcadephito.games.domain.GamesRepository
 import javax.inject.Inject
 
